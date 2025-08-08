@@ -16,7 +16,7 @@ plugins {
 android {
 
     defaultConfig {
-        applicationId "io.horizontalsystems.bankwallet"
+        applicationId "com.VEXTOR7.RUUVOX"
         compileSdk compile_sdk_version
         minSdkVersion min_sdk_version
         targetSdkVersion compile_sdk_version
@@ -134,6 +134,8 @@ android {
             resValue "string", "chainalysisApiKey", "928bb256db73f1cb93e1b3366a145d9fbe06e28581c8b665b82ad70bbfef1db4"
             resValue "string", "hashDitBaseUrl", "https://api.diting.pro/v2/hashdit/"
             resValue "string", "hashDitApiKey", "KuyxZfvJXFrpAcztshhYqeWaRusxyGRDDhFYkeIw"
+            resValue "string", "companyWebPageLink", "https://vextor7.com"
+            resValue "string", "reportEmail", "support@vextor7.com"
         }
 
         release {
