@@ -34,17 +34,17 @@ android {
         }
 
         resValue "string", "companyWebPageLink", "https://horizontalsystems.io"
-        resValue "string", "appWebPageLink", "https://unstoppable.money"
-        resValue "string", "analyticsLink", "https://unstoppable.money/analytics"
+        resValue "string", "appWebPageLink", "https://vextor7.com"
+        resValue "string", "analyticsLink", "https://vextor7.com/analytics"
         resValue "string", "appGithubLink", "https://github.com/horizontalsystems/unstoppable-wallet-android"
         resValue "string", "appTwitterLink", "https://twitter.com/UnstoppableByHS"
         resValue "string", "appTelegramLink", "https://t.me/unstoppable_announcements"
-        resValue "string", "reportEmail", "support.unstoppable@protonmail.com"
+        resValue "string", "reportEmail", "support.ruvox@protonmail.com"
         resValue "string", "releaseNotesUrl", "https://api.github.com/repos/horizontalsystems/unstoppable-wallet-android/releases/tags/"
-        resValue "string", "walletConnectAppMetaDataName", "Unstoppable"
-        resValue "string", "walletConnectAppMetaDataUrl", "unstoppable.money"
+        resValue "string", "walletConnectAppMetaDataName", "Ruvox"
+        resValue "string", "walletConnectAppMetaDataUrl", "vextor7.com"
         resValue "string", "walletConnectAppMetaDataIcon", "https://raw.githubusercontent.com/horizontalsystems/HS-Design/master/PressKit/UW-AppIcon-on-light.png"
-        resValue "string", "accountsBackupFileSalt", "unstoppable"
+        resValue "string", "accountsBackupFileSalt", "Ruvox"
 
         buildConfigField "boolean", "FDROID_BUILD", "false"
 
@@ -317,7 +317,7 @@ dependencies {
     // Wallet kits
     implementation 'com.github.horizontalsystems:stellar-kit-android:c27e3a5'
     implementation 'com.github.horizontalsystems:ton-kit-android:dcddd90'
-    implementation 'com.github.horizontalsystems:bitcoin-kit-android:7826bf5'
+    implementation 'com.github.horizontalsystems:bitcoin-kit-android:5d94bfe'
     implementation 'com.github.horizontalsystems:ethereum-kit-android:1.2.0'
     implementation 'com.github.horizontalsystems:blockchain-fee-rate-kit-android:1d3bd49'
     implementation 'com.github.horizontalsystems:market-kit-android:f1286c8'

@@ -460,7 +460,7 @@ class App : CoreApp(), WorkConfiguration.Provider, ImageLoaderFactory {
         tonConnectManager = TonConnectManager(
             context = this,
             adapterFactory = adapterFactory,
-            appName = "unstoppable",
+            appName = "ruvox",
             appVersion = appConfigProvider.appVersion
         )
         tonConnectManager.start()

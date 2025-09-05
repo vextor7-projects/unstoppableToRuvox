@@ -125,7 +125,7 @@ fun ReleaseNotesScreen(
 
                 caption_jacob(
                     modifier = Modifier.padding(end = 24.dp),
-                    text = stringResource(R.string.ReleaseNotes_JoinUnstoppables)
+                    text = stringResource(R.string.ReleaseNotes_JoinRuvox)
                 )
             }
         }

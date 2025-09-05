@@ -43,7 +43,7 @@ jobs:
         uses: maierj/fastlane-action@v3.0.0
         with:
           lane: 'app_build_dev'
-          options: '{ "app_name": "Unstoppable-Dev" }'
+          options: '{ "app_name": "Ruvox-Dev" }'
           subdirectory: 'fastlane'
         env:
           BUILD_NUMBER: ${{env.BUILD_NUMBER_NEW}}
@@ -52,7 +52,7 @@ jobs:
         uses: maierj/fastlane-action@v3.0.0
         with:
           lane: 'app_build_fdroid'
-          options: '{ "app_name": "Unstoppable-FDroid" }'
+          options: '{ "app_name": "Ruvox-FDroid" }'
           subdirectory: 'fastlane'
         env:
           BUILD_NUMBER: ${{env.BUILD_NUMBER_NEW}}

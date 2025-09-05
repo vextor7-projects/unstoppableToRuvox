@@ -95,7 +95,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="tc" />
-                <data android:scheme="unstoppable.money" />
+                <data android:scheme="vextor7.com" />
             </intent-filter>
             <intent-filter android:label="@string/App_Name">
                 <action android:name="android.intent.action.VIEW" />
@@ -121,7 +121,7 @@
                 <category android:name="android.intent.category.BROWSABLE" />
 
                 <data android:scheme="https" />
-                <data android:host="unstoppable.money" />
+                <data android:host="vextor7.com" />
                 <data android:pathPrefix="/referral" />
             </intent-filter>
         </activity>

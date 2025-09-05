@@ -43,7 +43,7 @@ jobs:
         uses: maierj/fastlane-action@v3.0.0
         with:
           lane: 'app_build_release'
-          options: '{ "app_name": "Unstoppable-Release" }'
+          options: '{ "app_name": "Ruvox" }'
           subdirectory: 'fastlane'
         env:
           BUILD_NUMBER: ${{env.BUILD_NUMBER_NEW}}

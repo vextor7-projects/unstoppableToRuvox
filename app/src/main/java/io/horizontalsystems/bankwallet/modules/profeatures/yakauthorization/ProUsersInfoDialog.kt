@@ -64,7 +64,7 @@ private fun ProUsersInfoScreen(navController: NavController, features: List<Stri
     BottomSheetHeader(
         iconPainter = painterResource(R.drawable.icon_24_lock),
         iconTint = ColorFilter.tint(ComposeAppTheme.colors.jacob),
-        title = stringResource(R.string.ProUsersInfo_UnstoppablePass),
+        title = stringResource(R.string.ProUsersInfo_RuvoxPass),
         onCloseClick = {
             navController.popBackStack()
         }

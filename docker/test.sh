@@ -133,7 +133,7 @@ meld $fromPlayUnpacked $fromBuildUnpacked
 for more details."
 }
 
-testUnstoppable() {
+testRuvox() {
   repo=https://github.com/horizontalsystems/unstoppable-wallet-android
   tag=$versionName
   builtApk=$workDir/app/app/build/outputs/apk/release/app-release-unsigned.apk
@@ -150,7 +150,7 @@ testUnstoppable() {
 
 case "$appId" in
   "io.horizontalsystems.bankwallet")
-    testUnstoppable
+    testRuvox
     ;;
   *)
     echo "Unknown appId $appId"

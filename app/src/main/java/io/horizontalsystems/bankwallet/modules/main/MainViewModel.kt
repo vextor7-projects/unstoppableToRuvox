@@ -343,7 +343,8 @@ class MainViewModel(
                 }
             }
 
-            deeplinkString.startsWith("https://unstoppable.money/referral") -> {
+            // deeplinkString.startsWith("https://unstoppable.money/referral") -> {
+            deeplinkString.startsWith("#") -> {
                 val userId: String? = deepLink.getQueryParameter("userId")
                 val referralCode: String? = deepLink.getQueryParameter("referralCode")
                 if (userId != null && referralCode != null) {

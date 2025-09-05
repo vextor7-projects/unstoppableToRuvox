@@ -422,7 +422,7 @@ private fun SettingSections(
             .height(32.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        subhead1_grey(text = stringResource(id = R.string.Settings_JoinUnstoppables).uppercase())
+        subhead1_grey(text = stringResource(id = R.string.Settings_JoinRuvox).uppercase())
     }
     CellUniversalLawrenceSection(
         listOf({

@@ -38,14 +38,14 @@ plugins {
     id 'org.jetbrains.kotlin.plugin.compose' version '2.1.20' apply false
 }
 
-allprojects {
-    repositories {
-        google()
-        mavenCentral()
-        mavenLocal()
-        maven { url "https://jitpack.io" }
-    }
-}
+//allprojects {
+//    repositories {
+//        google()
+//        mavenCentral()
+//        mavenLocal()
+//        maven { url "https://jitpack.io" }
+//    }
+//}
 
 task clean(type: Delete) {
     delete rootProject.buildDir

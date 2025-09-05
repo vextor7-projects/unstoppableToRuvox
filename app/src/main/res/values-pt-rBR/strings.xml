@@ -97,7 +97,7 @@
     <string name="Language_Portuguese">Português</string>
     <!--Rate App-->
     <string name="RateApp_Title_Rate_This_App">GM!</string>
-    <string name="RateApp_Description_Rate_This_App">Gostou da Unstoppable? Compartilhe seus comentários e ideias para que ela possa ir mais longe.</string>
+    <string name="RateApp_Description_Rate_This_App">Gostou da Ruvox? Compartilhe seus comentários e ideias para que ela possa ir mais longe.</string>
     <string name="RateApp_Button_RateIt">Avaliar</string>
     <string name="RateApp_Button_NotNow">Agora não</string>
     <!--Restore-->
@@ -114,7 +114,7 @@
     <string name="Restore_PrivateKeyHint">Insira a Chave Privada EVM, a Chave Raiz BIP32 ou a Chave Privada Estendida de Conta</string>
     <string name="Restore_PhraseHint">Insira 12, 15, 18, 21 ou 24 palavras</string>
     <string name="Restore_NonStandardRestore">Restauração Não-Padrão</string>
-    <string name="Restore_NonStandard_Description">Esta página fornece um mecanismo especial de restauração de carteira para usuários do Unstoppable que possuem uma carteira fora do padrão. Essas carteiras podem ter sido criadas na versão Unstoppable 0.27 - 0.28 usando uma frase de recuperação diferente do inglês e/ou um caractere especial na senha da carteira (ou seja, símbolo diacrítico).\n\nSe você for um usuário afetado, o saldo da sua carteira será ser mostrado 0 após restaurar tal carteira na versão 0.29 ou superior. Esta página permitirá que você restaure o acesso à sua carteira não padrão. Uma vez restaurado, é recomendável criar uma nova carteira (que será compatível com o padrão) e mover fundos para lá.</string>
+    <string name="Restore_NonStandard_Description">Esta página fornece um mecanismo especial de restauração de carteira para usuários do Ruvox que possuem uma carteira fora do padrão. Essas carteiras podem ter sido criadas na versão Ruvox 0.27 - 0.28 usando uma frase de recuperação diferente do inglês e/ou um caractere especial na senha da carteira (ou seja, símbolo diacrítico).\n\nSe você for um usuário afetado, o saldo da sua carteira será ser mostrado 0 após restaurar tal carteira na versão 0.29 ou superior. Esta página permitirá que você restaure o acesso à sua carteira não padrão. Uma vez restaurado, é recomendável criar uma nova carteira (que será compatível com o padrão) e mover fundos para lá.</string>
     <string name="Restore_Bip_Recommended">(recomendado)</string>
     <string name="Restore_PrivateKey_InvalidKey">Chave Inválida</string>
     <string name="SelectContacts_All">Todas</string>
@@ -706,10 +706,10 @@
     <string name="StatusInfo_Processing">Processando</string>
     <string name="StatusInfo_Confirmed">Concluído</string>
     <string name="StatusInfo_Failed">Falhou</string>
-    <string name="StatusInfo_PendingDescription">A transação ainda não foi confirmada na blockchain. As transações enviadas com uma configuração de taxas recomendada ou maior são geralmente processadas dentro de alguns minutos. Transações enviadas com uma taxa baixa podem permanecer pendentes por algumas horas ou até mesmo dias, e podem até mesmo ser rejeitadas. Observe que o status de uma transação individual em interface da carteira Unstoppable normalmente é atualizado com um curto atraso.</string>
+    <string name="StatusInfo_PendingDescription">A transação ainda não foi confirmada na blockchain. As transações enviadas com uma configuração de taxas recomendada ou maior são geralmente processadas dentro de alguns minutos. Transações enviadas com uma taxa baixa podem permanecer pendentes por algumas horas ou até mesmo dias, e podem até mesmo ser rejeitadas. Observe que o status de uma transação individual em interface da carteira Ruvox normalmente é atualizado com um curto atraso.</string>
     <string name="StatusInfo_ProcessingDescription">A transação já foi incluída na blockchain, mas ainda não atingiu a finalidade permanente. Neste ponto, é seguro considerar a transação como concluída para pagamentos menores. Para pagamentos maiores, é recomendado esperar até que o status da transação seja alterado.</string>
     <string name="StatusInfo_ConfirmedDescription">A transação está concluída e considerada permanente e irreversível.</string>
-    <string name="StatusInfo_FailedDescription">A transação não foi processada e nenhuma transferência de valor ocorreu. Dependendo do motivo, algumas transações com falha podem consumir taxas de transação. As transações que foram substituídas ou canceladas por outra transação não consomem taxas de transação e também aparecerão com falha. O aplicativo Unstoppable não consegue mostrar o motivo das transações com falha, mas os usuários podem procurá-lo em um explorador de blocos público, como o etherscan.io.</string>
+    <string name="StatusInfo_FailedDescription">A transação não foi processada e nenhuma transferência de valor ocorreu. Dependendo do motivo, algumas transações com falha podem consumir taxas de transação. As transações que foram substituídas ou canceladas por outra transação não consomem taxas de transação e também aparecerão com falha. O aplicativo Ruvox não consegue mostrar o motivo das transações com falha, mas os usuários podem procurá-lo em um explorador de blocos público, como o etherscan.io.</string>
     <!-- Transaction Info Options -->
     <string name="TransactionInfoOptions_SpeedUp_Title">Acelerar</string>
     <string name="TransactionInfoOptions_SpeedUp_Button">Enviar novamente</string>
@@ -743,7 +743,7 @@
     <string name="SettingsCurrency_Title">Moeda base</string>
     <string name="SettingsCurrency_Other">OUTRA</string>
     <string name="SettingsCurrency_DisclaimerTitle">Aviso Legal</string>
-    <string name="SettingsCurrency_DisclaimerText">Os dados da taxa de câmbio são fornecidos por um serviço de terceiros - Coingecko.com. \n\nO aplicativo de carteira Unstoppable não garante que esses valores sejam sempre corretos e que correspondam aos dados do mercado. A chance de inconsistência é maior se você selecionar qualquer moeda base que não seja %s.</string>
+    <string name="SettingsCurrency_DisclaimerText">Os dados da taxa de câmbio são fornecidos por um serviço de terceiros - Coingecko.com. \n\nO aplicativo de carteira Ruvox não garante que esses valores sejam sempre corretos e que correspondam aos dados do mercado. A chance de inconsistência é maior se você selecionar qualquer moeda base que não seja %s.</string>
     <!--Settings-->
     <string name="Settings_Title">Configurações</string>
     <string name="Settings_SecurityCenter">Segurança</string>
@@ -762,10 +762,10 @@
     <string name="Settings_Contact_ViaTelegram">por Telegram</string>
     <string name="Settings_Contact_ViaEmail">por e-mail</string>
     <string name="Settings_AutoLock">Auto-Bloqueio</string>
-    <string name="Settings_JoinUnstoppables">Seja Unstoppable</string>
+    <string name="Settings_JoinRuvox">Seja Ruvox</string>
     <string name="Settings_VipSupport">Grupo VIP</string>
     <string name="Settings_BotSupport">Suporte por BOT</string>
-    <string name="Settings_JoinUnstoppables_Description">Aprenda e domine cripto através de vídeos exclusivos. Conheça-nos informalmente. Seja o primeiro a ver as coisas em que trabalhamos.</string>
+    <string name="Settings_JoinRuvox_Description">Aprenda e domine cripto através de vídeos exclusivos. Conheça-nos informalmente. Seja o primeiro a ver as coisas em que trabalhamos.</string>
     <string name="Settings_PersonalSupport">Suporte Pessoal</string>
     <string name="Settings_PersonalSupport_EnterTelegramAccountDescription">Digite seu nome de conta Telegram para começar um chat de suporte pessoal com a nossa equipe. Entraremos em contato com você e começaremos a trabalhar em seu problema assim que virmos.</string>
     <string name="Settings_PersonalSupport_YouAlreadyRequestedSupportDescription">Você já pediu um chat privado, encontre-o no Telegram</string>
@@ -777,7 +777,7 @@
     <string name="Settings_PersonalSupport_Requestfailed">Falha na solicitação</string>
     <string name="Settings_PersonalSupport_OpenTelegram">Abrir Telegram</string>
     <string name="Settings_VipSupport_StartChat">Junte-se ao grupo VIP</string>
-    <string name="Settings_VipSupport_Description">Obtenha acesso exclusivo ao nosso Grupo VIP, onde usuários premium e a equipe da Carteira Unstoppable colaboram. Receba assistência direta, discuta atualizações futuras e ajude a moldar a evolução da carteira.</string>
+    <string name="Settings_VipSupport_Description">Obtenha acesso exclusivo ao nosso Grupo VIP, onde usuários premium e a equipe da Carteira Ruvox colaboram. Receba assistência direta, discuta atualizações futuras e ajude a moldar a evolução da carteira.</string>
     <string name="Settings_Donate_Info">Juntos, com o seu apoio, podemos fazer este aplicativo ainda melhor!</string>
     <string name="Settings_Donate">Doar</string>
     <string name="Settings_GetYourTokens">Pegue seus tokens</string>
@@ -822,13 +822,13 @@
     <!--Why Donate Page-->
     <string name="SettingsBanner_DonateTitle">Apoie o movimento Imparável</string>
     <string name="SettingsBanner_DonateSubtitle">Faça parte do futuro das finanças privadas</string>
-    <string name="SettingsBanner_DonateUnstoppableHasBeenFreeFromDayOne">O Wallet não parável tem sido gratuito, sem anúncios e de código aberto desde o primeiro dia — e assim permanecerá.\"</string>
+    <string name="SettingsBanner_DonateRuvoxHasBeenFreeFromDayOne">O Wallet não parável tem sido gratuito, sem anúncios e de código aberto desde o primeiro dia — e assim permanecerá.\"</string>
     <string name="SettingsBanner_DonateByJoiningMovement">Ao aderir ao movimento Incessável, você defende finanças abertas e privadas:</string>
-    <string name="SettingsBanner_DonateUnstoppableWalletTeam">A Equipe de Carteira Iparável</string>
+    <string name="SettingsBanner_DonateRuvoxWalletTeam">A Equipe de Carteira Iparável</string>
     <string name="SettingsBanner_DonateYourSupportIsCommitment">Seu apoio não tem apenas a ver com desbloquear recursos — é um compromisso com a privacidade, liberdade e acesso aberto para todos.</string>
     <string name="SettingsBanner_DonateItHelpsWalletToBeAdFree">Ele ajuda a manter a carteira livre de anúncios, segura e verdadeiramente independente - para você e para centenas de milhares de pessoas que dependem dela em todo o mundo.</string>
     <string name="SettingsBanner_DonateExclusivelyOnFDroid">Exclusivamente em F-Droid</string>
-    <string name="SettingsBanner_DonateUnstoppableWalletGivesYouAdvancedFeatures">Wallet Istoppable fornece recursos avançados — sem assinatura, sem limites:</string>
+    <string name="SettingsBanner_DonateRuvoxWalletGivesYouAdvancedFeatures">Wallet Istoppable fornece recursos avançados — sem assinatura, sem limites:</string>
     <string name="SettingsBanner_DonateFeatureFullAnalytics">Análise completa e dados sobre tokens</string>
     <string name="SettingsBanner_DonateFeaturePrivacy">Modo de privacidade &amp; Modo de Duress</string>
     <string name="SettingsBanner_DonateFeatureSignals">Sinais para uma negociação segura</string>
@@ -836,7 +836,7 @@
     <string name="SettingsBanner_DonateFeatureAdvanced">Busca e filtros avançados de ativos</string>
     <string name="SettingsBanner_DonateFeaturePriority">Acesso prioritário ao suporte</string>
     <string name="SettingsBanner_DonateEveryBitOfSupportMatters">Todos os apoios são importantes.</string>
-    <string name="SettingsBanner_DonateBySupportingUnstoppableWalletYouHelpGrow">Ao apoiar Carteira Iparável, você nos ajuda a crescer, melhorar e permanecer independente.</string>
+    <string name="SettingsBanner_DonateBySupportingRuvoxWalletYouHelpGrow">Ao apoiar Carteira Iparável, você nos ajuda a crescer, melhorar e permanecer independente.</string>
     <!--Setting Subscription -->
     <string name="SettingsSubscription_Active">Ativo</string>
     <string name="SettingsSubscription_GetPremium">Obter Premium</string>
@@ -882,7 +882,7 @@
     <string name="Premium_UpgradeFeature_AdvancedSearch_BigDescription">Abandone o ruído e concentre-se em tokens de alto potencial com precisão. Use a Pesquisa Avançada para filtrar milhares de tokens por volume de negociação, blockchain, capitalização de mercado, tendências de preço, setor e desempenho — e muito mais. Poderoso, preciso e criado para descobrir.</string>
     <string name="Premium_UpgradeFeature_TradeSignals_BigDescription">Nunca mais perca uma oportunidade de negociação. O Monitoramento de Tendências fornece alertas em tempo real com base em análises técnicas avançadas, ajudando você a identificar tendências, detectar rompimentos e evitar armadilhas antes que elas aconteçam. Aja rápido, negocie de forma inteligente e maximize os ganhos.</string>
     <string name="Premium_UpgradeFeature_DuressMode_BigDescription">Sua cripto. Sua segurança. O Modo Coação permite que você crie várias configurações de carteira alternativas, cada uma com um PIN separado, fornecendo uma rota de fuga oculta em situações de alto risco. Se for forçado a desbloquear sua carteira, basta usar o PIN de coação (alternativo) para acessar uma carteira secundária sem ativos críticos expostos. Seus fundos reais permanecem ocultos. Sua segurança permanece intacta.</string>
-    <string name="Premium_UpgradeFeature_AddressPhishing_BigDescription">Um endereço errado e sua cripto se vai para sempre. A Unstoppable verifica automaticamente os endereços dos destinatários em busca de padrões suspeitos e defende contra as últimas ameaças de phishing, impedindo que você envie fundos para um hacker. Bloqueie transferências fraudulentas antes que elas aconteçam.</string>
+    <string name="Premium_UpgradeFeature_AddressPhishing_BigDescription">Um endereço errado e sua cripto se vai para sempre. A Ruvox verifica automaticamente os endereços dos destinatários em busca de padrões suspeitos e defende contra as últimas ameaças de phishing, impedindo que você envie fundos para um hacker. Bloqueie transferências fraudulentas antes que elas aconteçam.</string>
     <string name="Premium_UpgradeFeature_AddressBlacklist_BigDescription">Proteja-se de entidades arriscadas e sancionadas. A Verificação de Lista Negra verifica automaticamente os endereços dos destinatários em relação a bancos de dados de alto risco, sinalizando golpes, fraudes e entidades sancionadas antes de você enviar. Se um endereço estiver na lista negra, você saberá antes de cometer um erro caro. Proteja suas transações. Mantenha sua criptomoeda limpa. Mantenha a conformidade.</string>
     <string name="Premium_UpgradeFeature_VipSupport_BigDescription">Seja parte da evolução. Junte-se ao Grupo VIP para se conectar diretamente com nossa equipe de suporte técnico. Vote nas próximas funcionalidades e tenha uma prévia exclusiva das atualizações futuras. Sua voz importa—ajude a moldar a carteira de criptomoedas de próxima geração.</string>
     <string name="Premium_HighlyRatedSecurity">Segurança altamente qualificada, privacidade excepcional e uma carteira verdadeiramente sem custódia.</string>
@@ -931,10 +931,10 @@
     <string name="BackupManager_AppSettingsTitle">Configurações do Aplicativo</string>
     <string name="BackupManager_AppSettingsDescription">Linguagem, Moeda, Aparência …</string>
     <!-- Privacy  -->
-    <string name="Privacy_Information">Unstoppable não coleta dados pessoais que exponham suas informações privadas, como saldos de moedas ou endereços. Embora coletemos algumas estatísticas de uso da interface do usuário, é exclusivamente para entender nossa base de usuários e tendências de uso do aplicativo. Isso pode ser desativado se você desejar.</string>
+    <string name="Privacy_Information">Ruvox não coleta dados pessoais que exponham suas informações privadas, como saldos de moedas ou endereços. Embora coletemos algumas estatísticas de uso da interface do usuário, é exclusivamente para entender nossa base de usuários e tendências de uso do aplicativo. Isso pode ser desativado se você desejar.</string>
     <string name="Privacy_BulletedText1">A carteira não coleta nenhum dado pessoal.</string>
     <string name="Privacy_BulletedText2">Não há contas de usuário ou bancos de dados armazenando dados do usuário.</string>
-    <string name="Privacy_BulletedText3">Se permitido, a carteira compartilhará os hábitos de uso do aplicativo com a equipe do Unstoppable. Isso é para entender quais recursos estão sendo usados (ou não) pelos nossos usuários. Sendo um aplicativo focado em privacidade, precisamos de alguma maneira de avaliar nossos esforços e sem isso não temos ideia se os recursos que construímos estão sendo utilizados ou não.</string>
+    <string name="Privacy_BulletedText3">Se permitido, a carteira compartilhará os hábitos de uso do aplicativo com a equipe do Ruvox. Isso é para entender quais recursos estão sendo usados (ou não) pelos nossos usuários. Sendo um aplicativo focado em privacidade, precisamos de alguma maneira de avaliar nossos esforços e sem isso não temos ideia se os recursos que construímos estão sendo utilizados ou não.</string>
     <string name="ShareUiData">Compartilhar Dados de UI</string>
     <string name="ShareUiDataDescription">Esta configuração permite que você desative a análise de UI/UX e garanta total confidencialidade.</string>
     <!-- Security Center -->
@@ -954,7 +954,7 @@
     <string name="BtcBlockchainSettings_TransactionSettings">Configurações de transação</string>
     <string name="BtcBlockchainSettings_TransactionInputsOutputs">Entradas / Saídas de Transação</string>
     <string name="BtcBlockchainSettings_TransactionInputsOutputsSettingsDescription">Torne suas transações BTC, LTC e BCH mais difíceis de rastrear, alterando como as transações são estruturadas.</string>
-    <string name="BtcBlockchainSettings_TransactionInputsOutputsDescription">A maioria das transações do Bitcoin, bem como as transações em criptomoedas, incluindo Bitcoin Cash, Dash, e Litecoin, geram duas saídas. Uma saída é a quantidade que vai para o destinatário e a outra é a mudança de saída que é retornada ao remetente. A maneira como a maioria das carteiras constrói as transações torna mais fácil para um terceiro entender qual das saídas foi para a parte receptora e qual foi a quantia alterada retornada ao remetente. Como a saída retornada ao remetente será usada mais tarde em transações futuras, uma conexão entre essas duas transações se torna evidente.\n\nA carteira Unstoppable implementa medidas para tornar mais difícil para alguém descobrir qual saída vai para onde.\n\nExistem duas opções disponíveis para usuários Unstoppable:\n\n1. Embaralhamento: A ordem de saídas da transação é randomizada em cada transação. Às vezes a mudança pode ser a primeira saída, às vezes pode ser a segunda. Se um usuário confia no desenvolvedor do aplicativo, considere esta opção recomendada.\n\n2. Determinístico: Há um padrão comumente acordado para encomendar saídas de transação (conhecido como BIP69). Nas carteiras de código aberto, que o padrão garante que os usuários de carteira não precisam confiar em como desenvolvedores do aplicativo implementam a ordenação das saídas. Como este padrão é novo, muitas carteiras ainda não o implementaram. Como resultado, é um pouco possível ver no blockchain se uma transação foi enviada de uma carteira que usa esse padrão ou não.</string>
+    <string name="BtcBlockchainSettings_TransactionInputsOutputsDescription">A maioria das transações do Bitcoin, bem como as transações em criptomoedas, incluindo Bitcoin Cash, Dash, e Litecoin, geram duas saídas. Uma saída é a quantidade que vai para o destinatário e a outra é a mudança de saída que é retornada ao remetente. A maneira como a maioria das carteiras constrói as transações torna mais fácil para um terceiro entender qual das saídas foi para a parte receptora e qual foi a quantia alterada retornada ao remetente. Como a saída retornada ao remetente será usada mais tarde em transações futuras, uma conexão entre essas duas transações se torna evidente.\n\nA carteira Ruvox implementa medidas para tornar mais difícil para alguém descobrir qual saída vai para onde.\n\nExistem duas opções disponíveis para usuários Ruvox:\n\n1. Embaralhamento: A ordem de saídas da transação é randomizada em cada transação. Às vezes a mudança pode ser a primeira saída, às vezes pode ser a segunda. Se um usuário confia no desenvolvedor do aplicativo, considere esta opção recomendada.\n\n2. Determinístico: Há um padrão comumente acordado para encomendar saídas de transação (conhecido como BIP69). Nas carteiras de código aberto, que o padrão garante que os usuários de carteira não precisam confiar em como desenvolvedores do aplicativo implementam a ordenação das saídas. Como este padrão é novo, muitas carteiras ainda não o implementaram. Como resultado, é um pouco possível ver no blockchain se uma transação foi enviada de uma carteira que usa esse padrão ou não.</string>
     <!--Info screen-->
     <string name="Info_Title">Informação</string>
     <!--Setting_Security-->
@@ -967,7 +967,7 @@
     <string name="SettingsSecurity_DisableDuressPin">Desabilitar senha de cobrança</string>
     <string name="SettingsSecurity_DuressPinDescription">Um modo especializado projetado para manter as carteiras selecionadas seguras sob coação.</string>
     <string name="SettingsSecurity_ManageKeys">Gerenciar carteiras</string>
-    <string name="SettingsSecurity_AppRestartWarning">Esta ação reiniciará Carteira Unstoppable.</string>
+    <string name="SettingsSecurity_AppRestartWarning">Esta ação reiniciará Carteira Ruvox.</string>
     <string name="SettingsSecurity_TorConnectionDescription">Anonimize sua internet completamente enquanto estiver usando este aplicativo. Nota: em alguns casos, o recurso WalletConnect para apps DeFi pode ser muito lento ou nem funcionar.</string>
     <string name="SettingsSecurity_SortingShuffle">Embaralhar</string>
     <string name="SettingsSecurity_SortingShuffleDescription">Indexação aleatória</string>
@@ -1001,7 +1001,7 @@
     <string name="SettingsTerms_DisablingPin">Desabilitando o PIN (código) no smartphone exclui todas as carteiras do aplicativo. As frases de recuperação serão necessárias para restaurar o acesso aos fundos.</string>
     <!--Setting_Tell Friends-->
     <string name="SettingsShare_Title">Compartilhar</string>
-    <string name="SettingsShare_Text">Seja Unstoppable</string>
+    <string name="SettingsShare_Text">Seja Ruvox</string>
     <!--Setting_Contact-->
     <string name="SettingsContact_Title">Fale Conosco</string>
     <!--Setting_Notifications-->
@@ -1050,7 +1050,7 @@
 \n- TYPE0 (antigo)
 \n- TYPE145 (mais recente)
 \n
-\nEmbora a carteira Unstoppable suporte ambos, recomenda-se usar uma carteira Bitcoin Cash operando no formato TYPE145.</string>
+\nEmbora a carteira Ruvox suporte ambos, recomenda-se usar uma carteira Bitcoin Cash operando no formato TYPE145.</string>
     <string name="ManageCoins_ContractAddress">ENDEREÇO DE CONTRACT</string>
     <!-- Experimental Feature -->
     <!-- Bitcoin Hodling -->
@@ -1151,7 +1151,7 @@
     <string name="PrivateKeys_Bip32RootKeyDescription">Concede controle total sobre os ativos da respectiva carteira.</string>
     <string name="PrivateKeys_AccountExtendedPrivateKey">Chave Privada Estendida da Conta</string>
     <string name="PrivateKeys_AccountExtendedPrivateKeyDescription">Concede controle total sobre Bitcoin e outras criptomoedas baseadas em UTXO, ou seja, Litecoin, Bitcoin Cash, Dash etc. dentro da respectiva carteira.</string>
-    <string name="PrivateKeys_NeverShareWarning">Nunca compartilhe sua frase de recuperação com ninguém. A equipe Unstoppable nunca pedirá a sua frase de recuperação.</string>
+    <string name="PrivateKeys_NeverShareWarning">Nunca compartilhe sua frase de recuperação com ninguém. A equipe Ruvox nunca pedirá a sua frase de recuperação.</string>
     <!-- Public Keys -->
     <string name="PublicKeys_Title">Chaves públicas</string>
     <string name="PublicKeys_EvmAddress">Endereço EVM</string>
@@ -1280,7 +1280,7 @@
     <string name="CoinPage_FastLength">Comprimento Rápido</string>
     <string name="CoinPage_SlowLength">Comprimento Lento</string>
     <string name="CoinPage_SignalSmoothing">Suavização de sinal</string>
-    <string name="CoinPage_IndicatorsAlertText">Indicadores disponíveis apenas para usuários Premium Unstoppable.</string>
+    <string name="CoinPage_IndicatorsAlertText">Indicadores disponíveis apenas para usuários Premium Ruvox.</string>
     <string name="CoinPage_AiGeneratedText">Esta é uma descrição gerada por IA com base no material de referência fornecido para a criptomoeda em questão. Pode conter erros.</string>
     <string name="CoinPage_MarketsLabel_Verified">VERIFICADO</string>
     <string name="CoinPage_MarketsVerifiedMenu_Verified">Confirmado</string>
@@ -1456,8 +1456,8 @@
     <string name="BalanceSyncError_ButtonChangeSource">Mudar a fonte</string>
     <string name="BalanceSyncError_ButtonReport">Reportar</string>
     <!--Release notes-->
-    <string name="ReleaseNotes_JoinUnstoppables">JUNTE-SE EM REPARÁVEIS</string>
-    <string name="ProUsersInfo_UnstoppablePass">Senha Unstoppable</string>
+    <string name="ReleaseNotes_JoinRuvox">JUNTE-SE EM REPARÁVEIS</string>
+    <string name="ProUsersInfo_RuvoxPass">Senha Ruvox</string>
     <string name="ProUsersInfo_Description">Para ativar estes dados, você deve obter o nível bronze de UW NFT \"Coin Info+\"\n\nTambém você terá acesso aos dados abaixo:</string>
     <string name="ProUsersInfo_Features_DexVolume">Volume e Rank DEX</string>
     <string name="ProUsersInfo_Features_DesLiquidity">Liquidez e Rank DEX</string>
@@ -1475,8 +1475,8 @@
     <string name="Alert_KeysInvalidatedTitle">Erro de Keystore do Android</string>
     <string name="Alert_KeysInvalidatedDescription">Os dados criptografados que continham sua carteira foram invalidados recentemente porque a tela de bloqueio do iOS foi alterada</string>
     <string name="Alert_TitleWarning">Aviso</string>
-    <string name="Alert_CustomKeyboardIsUsed">Parece que o seu dispositivo usa um teclado que não é padrão. A Unstoppable recomenda a seleção de teclado padrão no seu dispositivo, já que teclados de terceiros podem potencialmente coletar e expor os dados de entrada dos usuários. \n\nClique no botão \'Avançar\' se você quiser continuar usando seu teclado preferido.</string>
-    <string name="Alert_DeviceIsRootedWarning">A equipe Unstoppable recomenda a execução do aplicativo apenas em telefones sem root (sem jailbreak).\n\nObserve que quando você usa um dispositivo com root, o aplicativo não pode mais garantir a segurança de sua criptomoeda contra software malicioso.</string>
+    <string name="Alert_CustomKeyboardIsUsed">Parece que o seu dispositivo usa um teclado que não é padrão. A Ruvox recomenda a seleção de teclado padrão no seu dispositivo, já que teclados de terceiros podem potencialmente coletar e expor os dados de entrada dos usuários. \n\nClique no botão \'Avançar\' se você quiser continuar usando seu teclado preferido.</string>
+    <string name="Alert_DeviceIsRootedWarning">A equipe Ruvox recomenda a execução do aplicativo apenas em telefones sem root (sem jailbreak).\n\nObserve que quando você usa um dispositivo com root, o aplicativo não pode mais garantir a segurança de sua criptomoeda contra software malicioso.</string>
     <!--OS Pin-->
     <string name="OSPin_Confirm_Title">PIN do telefone</string>
     <string name="OSPin_Confirm_Desciption">Este aplicativo requer que o telefone tenha a senha (bloqueio de tela) ativada.\n\nVocê pode ativá-lo nas configurações do Android.\n\nObserve que quando você desativa o PIN no nível do sistema operacional, as medidas de segurança no armazenamento seguro do seu telefone tornou os dados armazenados anteriormente inválidos. Você precisará Restaurar as chaves da carteira para voltar à sua carteira.</string>

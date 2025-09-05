@@ -116,13 +116,13 @@ fun WhyDonateView(
                 )
                 VSpacer(12.dp)
                 headline1_leah(
-                    text = stringResource(R.string.SettingsBanner_DonateUnstoppableHasBeenFreeFromDayOne),
+                    text = stringResource(R.string.SettingsBanner_DonateRuvoxHasBeenFreeFromDayOne),
                     modifier = Modifier.padding(horizontal = 24.dp),
                     textAlign = TextAlign.Center
                 )
                 VSpacer(12.dp)
                 body_jacob(
-                    text = stringResource(R.string.SettingsBanner_DonateUnstoppableWalletTeam),
+                    text = stringResource(R.string.SettingsBanner_DonateRuvoxWalletTeam),
                     modifier = Modifier
                         .padding(horizontal = 24.dp)
                         .fillMaxWidth(),
@@ -165,7 +165,7 @@ fun WhyDonateView(
                 )
                 VSpacer(12.dp)
                 headline1_leah(
-                    text = stringResource(R.string.SettingsBanner_DonateUnstoppableWalletGivesYouAdvancedFeatures),
+                    text = stringResource(R.string.SettingsBanner_DonateRuvoxWalletGivesYouAdvancedFeatures),
                     modifier = Modifier.padding(horizontal = 24.dp),
                 )
                 VSpacer(24.dp)
@@ -226,7 +226,7 @@ fun WhyDonateView(
                 )
                 VSpacer(12.dp)
                 headline1_leah(
-                    text = stringResource(R.string.SettingsBanner_DonateBySupportingUnstoppableWalletYouHelpGrow),
+                    text = stringResource(R.string.SettingsBanner_DonateBySupportingRuvoxWalletYouHelpGrow),
                     modifier = Modifier.padding(horizontal = 24.dp),
                     textAlign = TextAlign.Center
                 )
