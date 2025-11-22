@@ -1,0 +1,98 @@
+[tool.poetry]
+name = "ruvox-backend"
+version = "0.1.0"
+description = "FastAPI backend for the Ruvox Solana-Based Stablecoin Wallet & Smart Contract Payment System."
+authors = ["Ruvox Development Team <dev@ruvox.com>"]
+license = "Proprietary"
+readme = "README.md"
+packages = [{include = "app"}]
+
+[tool.poetry.dependencies]
+python = "^3.11" # Using a modern, secure Python version
+
+# --- Core Framework ---
+fastapi = "^0.111.0"
+uvicorn = {extras = ["standard"], version = "^0.30.1"}
+pydantic = {extras = ["email"], version = "^2.8.2"}
+pydantic-settings = "^2.3.4"
+
+# --- Database & Migrations ---
+sqlalchemy = {extras = ["asyncio", "mypy"], version = "^2.0.31"}
+asyncpg = "^0.29.0" # Async PostgreSQL driver
+alembic = "^1.13.2"
+
+# --- Caching, Tasks & Scheduling ---
+redis = {extras = ["hiredis"], version = "^5.0.7"} # For cache, broker, and results
+celery = "^5.4.0"
+flower = "^2.0.1" # Celery monitoring dashboard
+apscheduler = "^3.10.4"
+
+# --- Security & Authentication ---
+python-jose = {extras = ["cryptography"], version = "^3.3.0"} # For JWT
+passlib = {extras = ["bcrypt"], version = "^1.7.4"}        # For hashing PINs/passwords
+pyotp = "^2.9.0"                                            # For TOTP 2FA (Stage 3)
+cryptography = "^43.0.0"                                    # For data encryption (Stage 3)
+
+# --- Blockchain Interaction (Stages 1, 2, 11) ---
+solana = "^0.33.0"           # Solana client library
+anchorpy = "^0.20.1"         # Anchor client for Solana smart contracts
+web3 = "^6.13.0"             # EVM chains (Base, Polygon, ETH)
+python-bitcoinlib = "^0.12.2" # Bitcoin (SPV, UTXO, etc.)
+
+# --- External APIs & HTTP Client ---
+httpx = {extras = ["http2"], version = "^0.27.0"} # Async HTTP client
+aioboto3 = "^12.3.0"                                # Async AWS SDK (S3, KMS, SES)
+twilio = "^9.2.1"                                   # SMS verification (Stage 3)
+firebase-admin = "^6.5.0"                           # FCM for push notifications (Stage 15)
+sendgrid = "^6.11.1"                         # Alternative for email (Stage 15)
+
+# --- Utilities ---
+python-dotenv = "^1.0.1"      # Loads .env file
+phonenumbers = "^8.13.43"   # Phone number validation
+# py-solana-account-program = "^0.1.2" # Helper for Solana account interactions <-- REMOVE THIS LINE
+
+[tool.poetry.group.dev.dependencies]
+# --- Testing ---
+pytest = "^8.2.2"
+pytest-asyncio = "^0.23.7"
+pytest-cov = "^5.0.0"       # For test coverage
+faker = "^26.0.0"           # For generating mock data
+respx = "^0.21.0"           # For mocking httpx requests
+
+# --- Linting & Formatting ---
+ruff = "^0.5.0"             # High-performance linter & formatter
+black = "^24.4.2"           # Code formatter (can be replaced by ruff format)
+mypy = "^1.10.1"            # Static type checker
+
+# --- Pre-commit & Tooling ---
+pre-commit = "^3.7.1"
+types-redis = "^4.6.0.20240523" # Type hints for redis
+types-passlib = "^1.7.7.20240313" # Type hints for passlib
+
+[tool.ruff]
+# Enable Pyflakes (F), Pycodestyle (E, W), isort (I)
+select = ["E", "W", "F", "I", "C", "B", "UP"]
+ignore = ["E501"] # Ignore line length, let 'ruff format' or 'black' handle it.
+
+line-length = 88
+target-version = "py311"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.black]
+line-length = 88
+target-version = ['py311']
+
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+ignore_missing_imports = true
+plugins = ["sqlalchemy.ext.mypy.plugin"]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+

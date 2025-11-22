@@ -6,3 +6,35 @@
 /captures
 /local.properties
 .externalNativeBuild
+
+# Frontend
+# Ignore Node.js dependency folders
+/frontend/node_modules/
+/node_modules/
+
+# Ignore compiled output folders
+/frontend/dist/
+/frontend/build/
+
+# Ignore environment variables
+/frontend/.env
+.env
+
+# Log and coverage files
+/frontend/npm-debug.log*
+/frontend/yarn-error.log
+/frontend/coverage/
+
+# Backend
+# Ignore dependency folders for different languages
+/backend/node_modules/
+/backend/vendor/
+/backend/venv/
+
+# Ignore compiled files and packages
+/backend/target/ # for Maven
+/backend/*.jar
+/backend/*.war
+
+# Ignore backend-specific environment files
+/backend/.env

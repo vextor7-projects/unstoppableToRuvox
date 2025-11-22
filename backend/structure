@@ -1,0 +1,139 @@
+vextor7-backend/
+├── .env
+├── .gitignore
+├── Dockerfile
+├── docker-compose.yml
+├── alembic.ini
+├── poetry.lock
+├── pyproject.toml
+├── README.md
+├── app/
+│   ├── __init__.py
+│   ├── main.py
+│   ├── api/
+│   │   ├── __init__.py
+│   │   ├── v1/
+│   │   │   ├── __init__.py
+│   │   │   ├── endpoints/
+│   │   │   │   ├── __init__.py
+│   │   │   │   ├── auth.py
+│   │   │   │   ├── users.py
+│   │   │   │   ├── security.py
+│   │   │   │   ├── wallets.py
+│   │   │   │   ├── transactions.py
+│   │   │   │   ├── exchange.py
+│   │   │   │   ├── payments.py
+│   │   │   │   ├── invoices.py
+│   │   │   │   ├── subscriptions.py
+│   │   │   │   ├── merchants.py
+│   │   │   │   ├── market.py
+│   │   │   │   ├── staking.py
+│   │   │   │   ├── vip.py
+│   │   │   │   ├── nfts.py
+│   │   │   │   ├── defi.py
+│   │   │   │   └── admin.py
+│   │   │   ├── deps.py
+│   │   │   └── websockets.py
+│   ├── core/
+│   │   ├── __init__.py
+│   │   ├── config.py
+│   │   └── security.py
+│   ├── crud/
+│   │   ├── __init__.py
+│   │   ├── base.py
+│   │   ├── crud_user.py
+│   │   ├── crud_kyc.py
+│   │   ├── crud_wallet.py
+│   │   ├── crud_ledger.py
+│   │   ├── crud_payment.py
+│   │   ├── crud_invoice.py
+│   │   ├── crud_subscription.py
+│   │   ├── crud_merchant.py
+│   │   ├── crud_staking.py
+│   │   ├── crud_vip.py
+│   │   ├── crud_compliance.py
+│   │   └── crud_market.py
+│   ├── db/
+│   │   ├── __init__.py
+│   │   ├── base_class.py
+│   │   ├── session.py
+│   │   └── init_db.py
+│   ├── models/
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   ├── kyc.py
+│   │   ├── wallet.py
+│   │   ├── ledger.py
+│   │   ├── payment.py
+│   │   ├── invoice.py
+│   │   ├── subscription.py
+│   │   ├── merchant.py
+│   │   ├── staking_vip.py
+│   │   ├── compliance.py
+│   │   ├── market.py
+│   │   └── smart_contract.py
+│   ├── schemas/
+│   │   ├── __init__.py
+│   │   ├── user.py
+│   │   ├── token.py
+│   │   ├── security.py
+│   │   ├── kyc.py
+│   │   ├── wallet.py
+│   │   ├── transaction.py
+│   │   ├── exchange.py
+│   │   ├── payment.py
+│   │   ├── invoice.py
+│   │   ├── subscription.py
+│   │   ├── merchant.py
+│   │   ├── market.py
+│   │   ├── staking.py
+│   │   ├── vip.py
+│   │   ├── nft.py
+│   │   └── defi.py
+│   ├── services/
+│   │   ├── __init__.py
+│   │   ├── blockchain/
+│   │   │   ├── __init__.py
+│   │   │   ├── base_blockchain_service.py
+│   │   │   ├── solana_service.py
+│   │   │   ├── evm_service.py
+│   │   │   ├── bitcoin_service.py
+│   │   │   └── rpc_client.py
+│   │   ├── kyc_service.py
+│   │   ├── payment_service.py
+│   │   ├── notification_service.py
+│   │   ├── onramp_service.py
+│   │   ├── compliance_service.py
+│   │   ├── market_data_service.py
+│   │   ├── staking_service.py
+│   │   ├── ledger_service.py
+│   │   ├── dex_aggregator_service.py
+│   │   └── merchant_service.py
+│   ├── tasks/
+│   │   ├── __init__.py
+│   │   ├── celery_app.py
+│   │   ├── sync_balances.py
+│   │   ├── process_withdrawals.py
+│   │   ├── monitor_deposits.py
+│   │   ├── process_subscriptions.py
+│   │   ├── send_notifications.py
+│   │   └── compliance_tasks.py
+│   └── utils/
+│       ├── __init__.py
+│       ├── helpers.py
+│       ├── constants.py
+│       ├── enums.py
+│       └── exceptions.py
+├── alembic/
+│   ├── versions/
+│   └── env.py
+├── smart_contracts/
+│   ├── solana/
+│   └── evm/
+└── tests/
+    ├── __init__.py
+    ├── conftest.py
+    ├── api/
+    ├── crud/
+    ├── services/
+    └── utils/

@@ -1,0 +1,138 @@
+version: '3.9'
+
+services:
+  # -------------------------------------------------
+  # PostgreSQL Database
+  # -------------------------------------------------
+  db:
+    image: postgres:15-alpine
+    container_name: ruvox_db
+    environment:
+      # These variables MUST match the ones in your .env file
+      POSTGRES_USER: ${DATABASE_USER:-ruvox_user}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD:-ruvox_pass}
+      POSTGRES_DB: ${DATABASE_NAME:-ruvoxdb}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DATABASE_USER:-ruvox_user} -d ${DATABASE_NAME:-ruvoxdb}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # -------------------------------------------------
+  # Redis Cache & Celery Broker
+  # -------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: ruvox_redis
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # -------------------------------------------------
+  # FastAPI Backend Application
+  # -------------------------------------------------
+  backend:
+    container_name: ruvox_backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # Command to run in development. Uses --reload for hot-reloading.
+    # We wait for the DB to be healthy before starting.
+    command: sh -c "
+      echo 'Waiting for database to be ready...' &&
+      while ! pg_isready -h db -p 5432 -U ${DATABASE_USER:-ruvox_user} -d ${DATABASE_NAME:-ruvoxdb}; do
+        sleep 2;
+      done;
+      echo 'Database is ready!' &&
+      echo 'Applying database migrations...' &&
+      alembic upgrade head &&
+      echo 'Starting FastAPI server...' &&
+      uvicorn app.main:app --host 0.0.0.0 --port 8000 --reload
+      "
+    volumes:
+      - ./app:/app/app
+      - ./alembic:/app/alembic
+      - ./alembic.ini:/app/alembic.ini
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    restart: unless-stopped
+
+  # -------------------------------------------------
+  # Celery Worker
+  # -------------------------------------------------
+  celery_worker:
+    container_name: ruvox_celery_worker
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "celery -A app.tasks.celery_app worker --loglevel=info"
+    volumes:
+      - ./app:/app/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - backend
+    restart: unless-stopped
+
+  # -------------------------------------------------
+  # Celery Beat (Scheduler)
+  # -------------------------------------------------
+  celery_beat:
+    container_name: ruvox_celery_beat
+    build:
+      context: .
+      dockerfile: Dockerfile
+    command: "celery -A app.tasks.celery_app beat --loglevel=info -s /app/celerybeat-schedule"
+    volumes:
+      - ./app:/app/app
+    env_file:
+      - .env
+    depends_on:
+      - redis
+      - backend
+    restart: unless-stopped
+
+  # -------------------------------------------------
+  # Flower (Celery Monitoring Dashboard)
+  # -------------------------------------------------
+  flower:
+    image: mher/flower:2.0
+    container_name: ruvox_flower
+    environment:
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL:-redis://redis:6379/1}
+      - FLOWER_PORT=5555
+    ports:
+      - "5555:5555"
+    depends_on:
+      - redis
+      - celery_worker
+    restart: unless-stopped
+
+# -------------------------------------------------
+# Persistent Volumes
+# -------------------------------------------------
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

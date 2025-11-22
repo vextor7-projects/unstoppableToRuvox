@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="App_Name">Fdroid Ruvox</string>
-    <string name="DeeplinkScheme" translatable="false">ruvox-dev</string>
-</resources>
