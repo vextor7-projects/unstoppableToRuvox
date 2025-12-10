@@ -1,12 +1,11 @@
 import uuid
-from typing import List, Optional, Dict, Any
+from typing import List, Optional
 from decimal import Decimal
 
 from pydantic import BaseModel
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.future import select
-from sqlalchemy.sql import func
-from sqlalchemy import update, and_, desc
+from sqlalchemy import desc
 
 from app.crud.base import BaseCRUD
 from app.models.ledger import (
@@ -14,11 +13,7 @@ from app.models.ledger import (
     DepositTransaction,
     WithdrawalRequest,
 )
-from app.models.user import User
-from app.schemas.exchange import (
-    WithdrawalRequestCreate,
-    WithdrawalRequestUpdate, # Assuming an update schema for service layer
-)
+from app.schemas.exchange import WithdrawalRequestCreate, WithdrawalRequestUpdate
 from app.utils.enums import (
     Chain,
     TransactionStatus,
@@ -33,17 +28,12 @@ from app.utils.enums import (
 class CRUDInternalLedger(BaseCRUD[InternalLedger, BaseModel, BaseModel]):
     """
     CRUD operations for the InternalLedger model.
-    
-    Note: Create/Update schemas are BaseModel as entries are created
-    internally by services, not directly from API requests.
+    Includes Critical Row Locking logic.
     """
 
     async def get_by_transaction_id(
         self, db: AsyncSession, *, transaction_id: str
     ) -> Optional[InternalLedger]:
-        """
-        Get a ledger entry by its unique transaction_id for idempotency checks.
-        """
         stmt = select(self.model).filter(
             self.model.transaction_id == transaction_id
         )
@@ -58,9 +48,6 @@ class CRUDInternalLedger(BaseCRUD[InternalLedger, BaseModel, BaseModel]):
         skip: int = 0,
         limit: int = 100
     ) -> List[InternalLedger]:
-        """
-        Get paginated ledger history for a specific user.
-        """
         stmt = (
             select(self.model)
             .filter(self.model.user_id == user_id)
@@ -70,26 +57,6 @@ class CRUDInternalLedger(BaseCRUD[InternalLedger, BaseModel, BaseModel]):
         )
         result = await db.execute(stmt)
         return result.scalars().all()
-
-    async def get_current_balance(
-        self, db: AsyncSession, *, user_id: uuid.UUID, token_symbol: str
-    ) -> Decimal:
-        """
-        Get the most recent 'balance_after' for a user and token.
-        This provides the current, definitive internal balance.
-        """
-        stmt = (
-            select(self.model.balance_after)
-            .filter(
-                self.model.user_id == user_id,
-                self.model.token_symbol == token_symbol,
-            )
-            .order_by(self.model.created_at.desc())
-            .limit(1)
-        )
-        result = await db.execute(stmt)
-        balance = result.scalar_one_or_none()
-        return balance if balance is not None else Decimal("0")
 
     async def create_entry(
         self,
@@ -105,25 +72,35 @@ class CRUDInternalLedger(BaseCRUD[InternalLedger, BaseModel, BaseModel]):
         related_tx_hash: Optional[str] = None
     ) -> InternalLedger:
         """
-        Atomically creates a new ledger entry.
-        This calculates the new balance based on the most recent previous balance.
-        
-        NOTE: This method commits. For atomic double-entry (transfers),
-        the service layer must create two entries and commit manually.
+        Atomically creates a new ledger entry with ROW LOCKING.
         """
-        # Get current balance (this must be done inside the transaction scope,
-        # which the service layer will handle, but for single entries this is fine)
-        current_balance = await self.get_current_balance(
-            db, user_id=user_id, token_symbol=token_symbol
+        # 1. LOCK the most recent entry for this user/token.
+        # This prevents two concurrent requests from reading the same 'current_balance'
+        # and overwriting each other.
+        stmt = (
+            select(self.model)
+            .filter(
+                self.model.user_id == user_id,
+                self.model.token_symbol == token_symbol,
+            )
+            .order_by(self.model.created_at.desc())
+            .limit(1)
+            .with_for_update() # <--- CRITICAL PRODUCTION FIX
         )
-        
+        result = await db.execute(stmt)
+        latest_entry = result.scalar_one_or_none()
+
+        # 2. Calculate New Balance
+        current_balance = latest_entry.balance_after if latest_entry else Decimal("0")
         new_balance = current_balance + amount
 
-        if amount < 0 and new_balance < 0:
-            # This should be checked in the service layer *before* calling create,
-            # but serves as a final database-level safeguard.
-            raise ValueError("Insufficient internal balance.")
+        # 3. Safety Check (Redundant to Service layer but good for data integrity)
+        if new_balance < 0 and amount < 0:
+             # In a real double-entry system, we might allow overdrafts for fees,
+             # but for a user wallet, this is a hard stop.
+             raise ValueError(f"Insufficient funds in ledger lock. Current: {current_balance}")
 
+        # 4. Create Entry
         db_obj = InternalLedger(
             user_id=user_id,
             transaction_id=transaction_id,
@@ -136,24 +113,39 @@ class CRUDInternalLedger(BaseCRUD[InternalLedger, BaseModel, BaseModel]):
             related_tx_hash=related_tx_hash,
         )
         db.add(db_obj)
-        await db.commit()
+        
+        # 5. Flush only (Service Layer handles Commit)
+        await db.flush()
         await db.refresh(db_obj)
         return db_obj
+
+    # async def get_current_balance(
+    #     self, db: AsyncSession, *, user_id: uuid.UUID, token_symbol: str
+    # ) -> Decimal:
+    #     """
+    #     Get the most recent 'balance_after' for a user and token.
+    #     This provides the current, definitive internal balance.
+    #     """
+    #     stmt = (
+    #         select(self.model.balance_after)
+    #         .filter(
+    #             self.model.user_id == user_id,
+    #             self.model.token_symbol == token_symbol,
+    #         )
+    #         .order_by(self.model.created_at.desc())
+    #         .limit(1)
+    #     )
+    #     result = await db.execute(stmt)
+    #     balance = result.scalar_one_or_none()
+    #     return balance if balance is not None else Decimal("0")
 
 
 # --- CRUD for DepositTransaction ---
 
 class CRUDDepositTransaction(BaseCRUD[DepositTransaction, BaseModel, BaseModel]):
-    """
-    CRUD operations for the DepositTransaction model.
-    """
-
     async def get_by_tx_hash(
         self, db: AsyncSession, *, tx_hash: str
     ) -> Optional[DepositTransaction]:
-        """
-        Get a deposit transaction by its unique on-chain transaction hash.
-        """
         stmt = select(self.model).filter(self.model.tx_hash == tx_hash)
         result = await db.execute(stmt)
         return result.scalar_one_or_none()
@@ -161,10 +153,6 @@ class CRUDDepositTransaction(BaseCRUD[DepositTransaction, BaseModel, BaseModel])
     async def get_pending_deposits(
         self, db: AsyncSession, *, chain: Chain
     ) -> List[DepositTransaction]:
-        """
-        Get deposits for a specific chain that are still pending confirmation.
-        Used by the deposit monitoring task.
-        """
         stmt = (
             select(self.model)
             .filter(
@@ -181,9 +169,6 @@ class CRUDDepositTransaction(BaseCRUD[DepositTransaction, BaseModel, BaseModel])
         chain: Chain, from_address: str, to_address: str, 
         amount: Decimal, token_symbol: str, token_address: Optional[str]
     ) -> DepositTransaction:
-        """
-        Helper to create a new deposit record, typically when first detected.
-        """
         db_obj = DepositTransaction(
             user_id=user_id,
             tx_hash=tx_hash,
@@ -197,7 +182,7 @@ class CRUDDepositTransaction(BaseCRUD[DepositTransaction, BaseModel, BaseModel])
             confirmations=0
         )
         db.add(db_obj)
-        await db.commit()
+        await db.flush()
         await db.refresh(db_obj)
         return db_obj
 
@@ -207,10 +192,6 @@ class CRUDDepositTransaction(BaseCRUD[DepositTransaction, BaseModel, BaseModel])
 class CRUDWithdrawalRequest(
     BaseCRUD[WithdrawalRequest, WithdrawalRequestCreate, WithdrawalRequestUpdate]
 ):
-    """
-    CRUD operations for the WithdrawalRequest model.
-    """
-
     async def create_with_user(
         self,
         db: AsyncSession,
@@ -219,9 +200,6 @@ class CRUDWithdrawalRequest(
         user_id: uuid.UUID,
         priority: int = 0
     ) -> WithdrawalRequest:
-        """
-        Create a new withdrawal request for a user.
-        """
         db_obj = WithdrawalRequest(
             **obj_in.model_dump(),
             user_id=user_id,
@@ -230,7 +208,7 @@ class CRUDWithdrawalRequest(
             compliance_check_status=ComplianceCheckStatus.PENDING
         )
         db.add(db_obj)
-        await db.commit()
+        await db.flush()
         await db.refresh(db_obj)
         return db_obj
 
@@ -242,9 +220,6 @@ class CRUDWithdrawalRequest(
         skip: int = 0,
         limit: int = 100
     ) -> List[WithdrawalRequest]:
-        """
-        Get paginated withdrawal history for a specific user.
-        """
         stmt = (
             select(self.model)
             .filter(self.model.user_id == user_id)
@@ -258,12 +233,6 @@ class CRUDWithdrawalRequest(
     async def get_pending_for_processing(
         self, db: AsyncSession, limit: int = 100
     ) -> List[WithdrawalRequest]:
-        """
-        Get a batch of withdrawal requests that are approved and ready
-        to be processed (broadcasted) by the withdrawal task.
-        
-        Fetches highest priority first, then oldest.
-        """
         stmt = (
             select(self.model)
             .filter(
@@ -277,7 +246,7 @@ class CRUDWithdrawalRequest(
         return result.scalars().all()
 
 
-# Instantiate the CRUD objects for use in the application
+# Instantiate the CRUD objects
 crud_ledger = CRUDInternalLedger(InternalLedger)
 crud_deposit_transaction = CRUDDepositTransaction(DepositTransaction)
 crud_withdrawal_request = CRUDWithdrawalRequest(WithdrawalRequest)

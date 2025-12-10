@@ -30,11 +30,16 @@ class Merchant(Base):
     """
     __tablename__ = "merchant"
 
+    # User ID is both the PK and FK to user_account
     user_id = Column(
         UUID(as_uuid=True), 
         ForeignKey("user_account.id"), 
         primary_key=True
     )
+    
+    # We add a separate ID column (optional but often safer for ORMs) 
+    # OR we stick to user_id as PK. Since you already used user_id as PK,
+    # let's keep it but ensure Alembic sees it as the reference target.
     
     business_name = Column(String(255), nullable=False, index=True)
     business_type = Column(String(100), nullable=True)

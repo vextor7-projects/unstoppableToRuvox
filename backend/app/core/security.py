@@ -1,12 +1,19 @@
 import pyotp
 from datetime import datetime, timedelta, timezone
-from typing import Any, Optional, Dict, Union
+from typing import Any, Optional, Dict, Union, List
 
+import base64
+import hashlib
+
+import os
 from cryptography.fernet import Fernet
 from jose import jwt, JWTError
 from passlib.context import CryptContext
 
 from app.core.config import settings
+
+
+
 
 # -----------------------------------------------------------------------------
 # 1. PIN / Password Hashing (passlib)
@@ -27,22 +34,16 @@ def get_password_hash(password: str) -> str:
 # 2. JSON Web Tokens (JWT) (python-jose)
 # -----------------------------------------------------------------------------
 
-def create_access_token(subject: Union[str, Any], expires_delta: Optional[timedelta] = None) -> str:
-    """
-    Creates a new JWT Access Token.
-    
-    :param subject: The subject of the token (e.g., user ID or email).
-    :param expires_delta: Optional timedelta for token expiry. Uses config default if None.
-    :return: A signed JWT string.
-    """
+def create_access_token(subject: Union[str, Any], expires_delta: timedelta = None) -> str:
     if expires_delta:
         expire = datetime.now(timezone.utc) + expires_delta
     else:
         expire = datetime.now(timezone.utc) + timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
     
-    to_encode = {"exp": expire, "sub": str(subject), "type": "access"}
+    to_encode = {"exp": expire, "sub": str(subject)}
     encoded_jwt = jwt.encode(to_encode, settings.SECRET_KEY, algorithm=settings.ALGORITHM)
     return encoded_jwt
+
 
 def create_refresh_token(subject: Union[str, Any]) -> str:
     """
@@ -129,43 +130,50 @@ import hashlib
 
 def get_fernet_key() -> bytes:
     """
-    Derives a 32-byte key for Fernet from the application's SECRET_KEY.
-    NOTE: This is a simplified approach. Production would use KMS.
+    Returns the dedicated encryption key.
+    Checks environment for specific key, raises error in production if missing.
     """
-    # Use SHA-256 to hash the secret key to a 32-byte value
-    hashed_key = hashlib.sha256(settings.SECRET_KEY.encode()).digest()
-    # Base64-encode the hash to make it URL-safe for Fernet
-    return base64.urlsafe_b64encode(hashed_key)
-
-try:
-    fernet_client = Fernet(get_fernet_key())
-except Exception as e:
-    print(f"CRITICAL ERROR: Could not initialize Fernet encryption client. SECRET_KEY might be invalid. Error: {e}")
-    # In a real app, this should prevent startup.
-    fernet_client = None
-
-def encrypt_data(data: str) -> Optional[str]:
-    """
-    Encrypts a string using Fernet.
+    key = settings.ENCRYPTION_KEY
     
-    :param data: The plain-text string to encrypt.
-    :return: Encrypted string, or None if encryption client failed to initialize.
-    """
-    if not fernet_client:
+    if not key:
+        if settings.ENVIRONMENT == "production":
+            raise ValueError("CRITICAL SECURITY ERROR: ENCRYPTION_KEY is missing in production!")
+        # Fallback for dev ONLY (Deterministic hash of secret key)
+        return base64.urlsafe_b64encode(hashlib.sha256(settings.SECRET_KEY.encode()).digest())
+    
+    return key.encode()
+
+# try:
+#     fernet_client = Fernet(get_fernet_key())
+# except Exception as e:
+#     print(f"CRITICAL ERROR: Could not initialize Fernet encryption client. SECRET_KEY might be invalid. Error: {e}")
+#     # In a real app, this should prevent startup.
+#     fernet_client = None
+
+
+def encrypt_data(data: str) -> str:
+    """Encrypts a string using Fernet (Symmetric Encryption)."""
+    if not data:
         return None
-    return fernet_client.encrypt(data.encode()).decode()
+    f = Fernet(get_fernet_key())
+    return f.encrypt(data.encode()).decode()
+
+
 
 def decrypt_data(encrypted_data: str) -> Optional[str]:
-    """
-    Decrypts a Fernet-encrypted string.
-    
-    :param encrypted_data: The encrypted string.
-    :return: Decrypted plain-text string, or None if decryption fails.
-    """
-    if not fernet_client:
+    """Decrypts a Fernet token."""
+    if not encrypted_data:
         return None
     try:
-        return fernet_client.decrypt(encrypted_data.encode()).decode()
+        f = Fernet(get_fernet_key())
+        return f.decrypt(encrypted_data.encode()).decode()
     except Exception:
-        # This catches InvalidToken, TTL, etc.
         return None
+
+
+
+
+
+
+
+

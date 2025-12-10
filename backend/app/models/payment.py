@@ -65,7 +65,7 @@ class PaymentSession(Base):
     # Link to the final payment transaction once completed
     payment_transaction_id = Column(
         UUID(as_uuid=True), 
-        ForeignKey("payment_transaction.id"), 
+        ForeignKey("payment_transaction.id", use_alter=True, name="fk_payment_session_txn"), 
         nullable=True
     )
 
@@ -88,7 +88,7 @@ class PaymentTransaction(Base):
     # No, should be required.
     session_id = Column(
         UUID(as_uuid=True), 
-        ForeignKey("payment_session.id"), 
+        ForeignKey("payment_session.id", use_alter=True, name="fk_payment_txn_session"), 
         nullable=False, 
         index=True
     )

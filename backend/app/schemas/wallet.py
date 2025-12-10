@@ -1,11 +1,19 @@
 import uuid
+import re
 from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.utils.enums import Chain, TransactionStatus, TransactionType
+from app.utils.exceptions import InvalidAddressException
+
+# --- Regex Patterns for Address Validation ---
+EVM_ADDRESS_REGEX = re.compile(r"^0x[a-fA-F0-9]{40}$")
+SOLANA_ADDRESS_REGEX = re.compile(r"^[1-9A-HJ-NP-Za-km-z]{32,44}$")
+# Simple BTC regex (supports Legacy, SegWit, Taproot) - Production apps use lib validation
+BTC_ADDRESS_REGEX = re.compile(r"^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,62}$")
 
 # --- Token Balance Schemas ---
 
@@ -23,10 +31,6 @@ class TokenBalanceBase(BaseModel):
         from_attributes = True
 
 class TokenBalance(TokenBalanceBase):
-    """
-    Schema representing a token balance as returned by the API.
-    Includes database ID and last updated timestamp.
-    """
     id: uuid.UUID
     wallet_id: uuid.UUID
     last_updated: datetime
@@ -36,14 +40,14 @@ class TokenBalance(TokenBalanceBase):
 
 class BitcoinUtxo(BaseModel):
     """
-    Schema representing a Bitcoin UTXO.
+    Schema representing a Bitcoin UTXO (Unspent Transaction Output).
     """
     id: uuid.UUID
     wallet_id: uuid.UUID
     tx_hash: str
     vout: int
     address: str
-    amount_satoshi: Decimal # Represented as Decimal, but value is integer satoshis
+    amount_satoshi: Decimal
     script_pub_key: str
     is_spent: bool
     created_at: datetime
@@ -58,6 +62,7 @@ class WalletBase(BaseModel):
     """
     Base schema for wallet information.
     """
+    label: str
     chain: Chain
     address: str
     derivation_path: Optional[str] = None
@@ -65,24 +70,49 @@ class WalletBase(BaseModel):
     class Config:
         from_attributes = True
 
-class WalletCreate(BaseModel):
+class WalletAddRequest(BaseModel):
     """
-    Schema for creating a new wallet entry (address) within a portfolio.
-    Typically generated internally, not directly via API by user.
+    Schema for adding a PUBLIC wallet address generated on the client.
+    NEVER sends mnemonics or private keys.
     """
+    portfolio_id: uuid.UUID
     chain: Chain
     address: str
-    derivation_path: Optional[str] = None
+    label: Optional[str] = "Main Wallet"
+
+    @field_validator("address")
+    @classmethod
+    def validate_address(cls, v: str, info) -> str:
+        """
+        Validate address format based on the selected chain.
+        """
+        # We need access to the 'chain' field. Pydantic v2 validation logic:
+        values = info.data
+        chain = values.get("chain")
+        
+        if not chain:
+            return v # Let chain validation fail separately
+
+        if chain in [Chain.ETHEREUM, Chain.BASE, Chain.POLYGON]:
+            if not EVM_ADDRESS_REGEX.match(v):
+                raise ValueError(f"Invalid {chain} address format.")
+        elif chain == Chain.SOLANA:
+            if not SOLANA_ADDRESS_REGEX.match(v):
+                raise ValueError("Invalid Solana address format.")
+        elif chain == Chain.BITCOIN:
+            if not BTC_ADDRESS_REGEX.match(v):
+                raise ValueError("Invalid Bitcoin address format.")
+                
+        return v
 
 class Wallet(WalletBase):
     """
-    Schema representing a wallet (address) as returned by the API.
-    Includes database ID and associated token balances.
+    Schema representing a complete wallet object returned by the API.
+    Includes database-generated ID and user ID.
     """
     id: uuid.UUID
     portfolio_id: uuid.UUID
     token_balances: List[TokenBalance] = []
-    # Optionally include UTXOs if it's a Bitcoin wallet
     bitcoin_utxos: List[BitcoinUtxo] = []
 
 
@@ -105,19 +135,18 @@ class PortfolioCreate(PortfolioBase):
 
 class PortfolioUpdate(BaseModel):
     """
-    Schema for updating a portfolio's name.
+    Schema for updating a portfolio.
     """
     name: Optional[str] = Field(None, min_length=1, max_length=100)
 
 class Portfolio(PortfolioBase):
     """
-    Schema representing a portfolio as returned by the API.
-    Includes database ID, user ID, and associated wallets.
+    Schema representing a complete portfolio object returned by the API.
+    Includes database-generated ID and user ID.
     """
     id: uuid.UUID
     user_id: uuid.UUID
     wallets: List[Wallet] = []
-    # Optionally add aggregated balance fields
     total_usd_value: Decimal = Field(Decimal("0.0"), ge=0)
 
 
@@ -125,17 +154,17 @@ class Portfolio(PortfolioBase):
 
 class BalanceResponse(BaseModel):
     """
-    Schema for the response when querying balances for an address or portfolio.
+    Schema for the balance response of a wallet.
     """
-    chain: Optional[Chain] = None # Included if querying a specific wallet
-    address: Optional[str] = None # Included if querying a specific wallet
+    chain: Optional[Chain] = None 
+    address: Optional[str] = None 
     total_usd_value: Decimal = Field(..., ge=0)
-    balances: List[TokenBalanceBase] # Use base schema for brevity
+    balances: List[TokenBalanceBase]
 
 
 class TransactionBase(BaseModel):
     """
-    Base schema for on-chain transaction details.
+    Base schema for transaction details.
     """
     tx_hash: str
     chain: Chain
@@ -155,14 +184,14 @@ class TransactionBase(BaseModel):
 
 class Transaction(TransactionBase):
     """
-    Schema representing an on-chain transaction record returned by the API.
+    Schema representing a transaction returned by the API.
     """
     id: uuid.UUID
     wallet_id: uuid.UUID
 
 class HistoryResponse(BaseModel):
     """
-    Schema for the response when querying transaction history. Includes pagination.
+    Schema for the history response of a wallet.
     """
     transactions: List[Transaction]
     page: int

@@ -2,44 +2,37 @@ import uuid
 from decimal import Decimal
 from typing import List, Optional, Any, Dict
 
-from pydantic import BaseModel, Field, AnyHttpUrl
+from pydantic import BaseModel, Field, field_validator
 
 from app.utils.enums import Chain
-from app.schemas.transaction import FeeEstimate # Re-use FeeEstimate
-
-# --- Schemas for Swap Quotes ---
+from app.schemas.transaction import FeeEstimate
 
 class SwapQuoteRequest(BaseModel):
     """
-    Schema for requesting a swap quote from a DEX aggregator.
+    Schema for requesting a swap quote.
     """
     from_chain: Chain
-    from_token_address: Optional[str] = Field(None, description="Address of the token to sell (null for native)")
-    from_token_symbol: str # Symbol is helpful for display/lookup
+    from_token_address: Optional[str] = None
+    from_token_symbol: str
     
-    to_chain: Chain # For cross-chain swaps, otherwise same as from_chain
-    to_token_address: Optional[str] = Field(None, description="Address of the token to buy (null for native)")
+    to_chain: Chain
+    to_token_address: Optional[str] = None
     to_token_symbol: str
     
-    amount: Decimal = Field(..., gt=0, description="Amount of 'from_token' to sell (in standard units)")
-    
-    # User's wallet address for context (e.g., checking allowances, balances)
+    amount: Decimal = Field(..., gt=0)
     user_address: str
     
-    # Optional: Slippage tolerance percentage (e.g., 0.5 for 0.5%)
-    slippage_percentage: Decimal = Field(0.5, ge=0, le=5) # Default 0.5%, max 5%
+    # SAFETY FIX: Max slippage capped at 50% (user error protection), default 0.5%
+    slippage_percentage: Decimal = Field(0.5, ge=0, le=50) 
 
-class SwapRouteStep(BaseModel):
-    """ Represents a single step within a swap route. """
-    dex: str = Field(..., description="Name of the DEX used for this step")
-    from_token_symbol: str
-    to_token_symbol: str
-    # Add more details if provided by the aggregator (e.g., pool address)
+    @field_validator("user_address")
+    @classmethod
+    def validate_user_address(cls, v: str) -> str:
+        if len(v) < 20: # Basic length check
+            raise ValueError("Invalid wallet address length.")
+        return v
 
 class SwapQuoteResponse(BaseModel):
-    """
-    Schema for the response containing a swap quote from the aggregator.
-    """
     from_chain: Chain
     from_token_symbol: str
     from_token_address: Optional[str]
@@ -48,22 +41,23 @@ class SwapQuoteResponse(BaseModel):
     to_chain: Chain
     to_token_symbol: str
     to_token_address: Optional[str]
-    estimated_to_amount: Decimal = Field(..., description="Estimated amount of 'to_token' received")
-    minimum_to_amount: Optional[Decimal] = Field(None, description="Minimum amount guaranteed after slippage")
+    estimated_to_amount: Decimal
+    minimum_to_amount: Optional[Decimal]
     
-    price_impact_percentage: Optional[Decimal] = Field(None, description="Estimated price impact of the swap")
-    
-    # Estimated gas/network fees
+    price_impact_percentage: Optional[Decimal]
     fee_estimate: FeeEstimate
     
-    # Details of the swap route (if provided by aggregator)
-    route: Optional[List[SwapRouteStep]] = None
-    
-    # Aggregator-specific data needed for executing the swap
-    aggregator_data: Optional[Dict[str, Any]] = Field(None, description="Data needed by aggregator for swap execution")
-    
-    # Unique identifier for the quote, might be needed for execution
+    aggregator_data: Optional[Dict[str, Any]] = None
     quote_id: Optional[str] = None
+
+
+class SwapRouteStep(BaseModel):
+    """ Represents a single step within a swap route. """
+    dex: str = Field(..., description="Name of the DEX used for this step")
+    from_token_symbol: str
+    to_token_symbol: str
+    # Add more details if provided by the aggregator (e.g., pool address)
+
 
 
 # --- Schemas for Preparing Swap Transactions ---

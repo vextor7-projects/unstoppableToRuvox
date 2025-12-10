@@ -1,84 +1,71 @@
 import uuid
+import re
 from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional, Any, Dict
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 from app.utils.enums import Chain, TransactionStatus, TransactionType
+from app.schemas.base import IdempotencyMixin
 
-# --- Base Transaction Schema (already defined in wallet.py, reuse if needed or redefine) ---
-# Assuming TransactionBase and Transaction from wallet.py cover basic display needs.
-
-# --- Transaction Preparation Schemas ---
+# Reusing Regex from wallet schemas (ideally move to app/utils/validators.py)
+EVM_ADDRESS_REGEX = re.compile(r"^0x[a-fA-F0-9]{40}$")
+SOLANA_ADDRESS_REGEX = re.compile(r"^[1-9A-HJ-NP-Za-km-z]{32,44}$")
+BTC_ADDRESS_REGEX = re.compile(r"^(bc1|[13])[a-zA-HJ-NP-Z0-9]{25,62}$")
 
 class TransactionPrepareRequest(BaseModel):
     """
     Schema for requesting the backend to prepare an on-chain transaction.
-    This typically involves building the transaction structure and estimating fees.
     """
     chain: Chain
-    from_address: str # The sender's public wallet address
-    to_address: str   # The recipient's public wallet address or contract address
-    amount: Decimal = Field(..., gt=0) # Amount of the token to send
+    from_address: str
+    to_address: str
+    amount: Decimal = Field(..., gt=0)
     
-    # Specify the token being sent
-    token_symbol: Optional[str] = None # e.g., "USDC", null for native currency
-    token_address: Optional[str] = None # e.g., SPL or ERC20 address, null for native
-    
-    # Optional: User preference for transaction speed/fee
+    token_symbol: Optional[str] = None
+    token_address: Optional[str] = None
     fee_level: Optional[str] = Field(None, pattern="^(slow|standard|fast)$")
-    
-    # Optional: For EVM chains, could include nonce or gas limits if user wants control
-    nonce: Optional[int] = None
-    gas_limit: Optional[int] = None
-    
-    # Optional: For Bitcoin, specific UTXOs to use
-    utxos_to_use: Optional[List[Dict[str, Any]]] = None
-    
-    # Optional: Data for contract interactions
     data: Optional[str] = None
 
+    @field_validator("from_address", "to_address")
+    @classmethod
+    def validate_addresses(cls, v: str, info) -> str:
+        values = info.data
+        chain = values.get("chain")
+        if not chain: return v
+
+        if chain in [Chain.ETHEREUM, Chain.BASE, Chain.POLYGON]:
+            if not EVM_ADDRESS_REGEX.match(v):
+                raise ValueError(f"Invalid {chain} address format.")
+        elif chain == Chain.SOLANA:
+            if not SOLANA_ADDRESS_REGEX.match(v):
+                raise ValueError("Invalid Solana address format.")
+        elif chain == Chain.BITCOIN:
+            if not BTC_ADDRESS_REGEX.match(v):
+                raise ValueError("Invalid Bitcoin address format.")
+        return v
+
 class FeeEstimate(BaseModel):
-    """
-    Schema representing estimated transaction fee details.
-    """
     amount: Decimal = Field(..., ge=0)
-    token_symbol: str # e.g., SOL, ETH, MATIC, BTC
+    token_symbol: str
     usd_value: Optional[Decimal] = Field(None, ge=0)
 
 class TransactionPrepareResponse(BaseModel):
-    """
-    Schema for the response after preparing a transaction.
-    Contains the data needed by the frontend (and Wallet Core) to sign the transaction.
-    """
-    # Chain-specific unsigned transaction data (e.g., base64 string for Solana, JSON/dict for EVM/BTC)
     unsigned_tx: Any
-    
-    # Estimated fee details
     estimated_fee: FeeEstimate
-    
-    # Optional: Simulation results (e.g., predicted balance changes)
     simulation_result: Optional[Dict[str, Any]] = None
-    
-    # Optional: Warnings or information (e.g., high fee warning)
     warnings: Optional[List[str]] = None
 
-
-# --- Transaction Broadcasting Schemas ---
-
-class TransactionBroadcastRequest(BaseModel):
+class TransactionBroadcastRequest(IdempotencyMixin): # ADDED: Idempotency
     """
-    Schema for submitting a signed transaction to the backend for broadcasting.
+    Schema for submitting a signed transaction.
     """
     chain: Chain
-    # Chain-specific *signed* transaction data (e.g., base64 string, hex string)
-    signed_tx: str
+    signed_tx: str # Hex or Base64
+
 
 class TransactionBroadcastResponse(BaseModel):
-    """
-    Schema for the response after broadcasting a transaction.
-    """
     tx_hash: str
     message: str = "Transaction broadcasted successfully."
 

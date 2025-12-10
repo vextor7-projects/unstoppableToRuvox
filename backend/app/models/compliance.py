@@ -177,3 +177,25 @@ class RegulatorySubmission(Base):
     # --- Relationships ---
     
     report = relationship("ComplianceReport")
+
+
+class MsbLicense(Base):
+    """
+    Stores details about the company's MSB licenses or registrations.
+    (Stage 10)
+    """
+    __tablename__ = "msb_license"
+
+    jurisdiction = Column(String(50), nullable=False, index=True) # e.g., "US_FINCEN", "US_NY"
+    license_number = Column(String(100), unique=True, nullable=False)
+    
+    status = Column(String(50), default="ACTIVE", nullable=False)
+    
+    issued_date = Column(DateTime(timezone=True), nullable=False)
+    expiration_date = Column(DateTime(timezone=True), nullable=True)
+    
+    renewal_due_date = Column(DateTime(timezone=True), nullable=True)
+    
+    # Encrypted link to the license document in S3
+    document_s3_key = Column(String(1024), nullable=True)
+

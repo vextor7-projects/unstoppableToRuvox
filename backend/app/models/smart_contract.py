@@ -6,7 +6,8 @@ from sqlalchemy import (
     ForeignKey,
     DateTime,
     Text,
-    Integer
+    Integer,
+    Boolean
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship

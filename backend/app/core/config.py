@@ -7,6 +7,8 @@ class Settings(BaseSettings):
     """
     Pydantic settings model to load and validate all environment variables.
     """
+
+    BACKEND_CORS_ORIGINS: Optional[List[Union[str, AnyHttpUrl]]] = None
     
     # --- Application Core ---
     ENVIRONMENT: Literal["development", "production"] = "development"
@@ -14,10 +16,18 @@ class Settings(BaseSettings):
     ALGORITHM: str = "HS256"
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
+
+    # CRITICAL: Dedicated key for encrypting PII/Private Keys. 
+    # Must be 32 url-safe base64-encoded bytes.
+    ENCRYPTION_KEY: Optional[str] = None
     
     # --- Database (PostgreSQL) ---
     DATABASE_URL: PostgresDsn
     TEST_DATABASE_URL: Optional[PostgresDsn] = None
+
+    # Scalability: Connection Pool Settings
+    POSTGRES_POOL_SIZE: int = 20
+    POSTGRES_MAX_OVERFLOW: int = 10
 
     @field_validator("DATABASE_URL", mode="before")
     @classmethod
@@ -39,6 +49,8 @@ class Settings(BaseSettings):
     CELERY_RESULT_BACKEND: RedisDsn
 
     # --- Blockchain RPC Endpoints ---
+    BITCOIN_RPC_URL: AnyHttpUrl
+    BITCOIN_SEPOLIA_RPC_URL: AnyHttpUrl
     SOLANA_RPC_URL: AnyHttpUrl
     SOLANA_DEVNET_RPC_URL: AnyHttpUrl
     BASE_RPC_URL: AnyHttpUrl
@@ -65,6 +77,7 @@ class Settings(BaseSettings):
     AWS_SES_REGION: Optional[str] = None
     AWS_SES_ACCESS_KEY_ID: Optional[str] = None
     AWS_SES_SECRET_ACCESS_KEY: Optional[str] = None
+    EMAILS_FROM_EMAIL: Optional[EmailStr] = None
     
     # Option 2: SendGrid
     SENDGRID_API_KEY: Optional[str] = None

@@ -3,56 +3,50 @@ from datetime import datetime
 from decimal import Decimal
 from typing import List, Optional, Any, Dict
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
-from app.utils.enums import Chain, PaymentSessionStatus, TransactionStatus
+from app.utils.enums import Chain, PaymentSessionStatus
+from app.schemas.base import IdempotencyMixin
 
 # --- Payment Session Schemas ---
 
-class PaymentSessionCreateRequest(BaseModel):
+class PaymentSessionCreateRequest(IdempotencyMixin): # ADDED: Idempotency
     """
-    Schema for creating a new payment session (e.g., for QR code generation).
-    Typically initiated by a merchant or user wanting to receive payment.
+    Schema for creating a new payment session.
     """
-    amount_fiat: Decimal = Field(..., gt=0, description="Amount in fiat currency (e.g., USD)")
-    fiat_currency: str = Field("USD", max_length=10, description="Fiat currency code")
+    amount_fiat: Decimal = Field(..., gt=0, description="Amount in fiat currency")
+    fiat_currency: str = Field("USD", min_length=3, max_length=3, description="Fiat currency code")
     
-    # Specify the desired settlement token (defaults to USDC)
-    token_symbol: str = Field("USDC", max_length=20, description="Desired settlement token symbol")
+    token_symbol: str = Field("USDC", max_length=20)
     
-    # Optional: Link to a specific merchant account if created by a merchant POS
     merchant_id: Optional[uuid.UUID] = None
-    
-    # Optional: Link to a specific user if created directly by a user
     creator_user_id: Optional[uuid.UUID] = None
-    
-    # Optional: Client-provided idempotency key
-    client_session_id: Optional[str] = Field(None, max_length=100)
+
+    @field_validator("fiat_currency")
+    @classmethod
+    def uppercase_currency(cls, v: str) -> str:
+        return v.upper()
 
 class PaymentSessionResponse(BaseModel):
-    """
-    Schema representing a payment session returned by the API.
-    Contains details needed to display QR code or handle NFC.
-    """
     id: uuid.UUID
     creator_user_id: Optional[uuid.UUID] = None
     merchant_id: Optional[uuid.UUID] = None
     
     amount_fiat: Decimal
     fiat_currency: str
-    amount_token: Decimal # Calculated equivalent in settlement token
+    amount_token: Decimal
     token_symbol: str
     
     status: PaymentSessionStatus
-    qr_nfc_payload: str # Encrypted data for QR/NFC
+    qr_nfc_payload: str # Encrypted
     expires_at: datetime
     created_at: datetime
     
-    # Link to the transaction once completed
     payment_transaction_id: Optional[uuid.UUID] = None
 
     class Config:
         from_attributes = True
+
 
 class PaymentExecutionDetails(BaseModel):
     """
@@ -163,12 +157,19 @@ class PaymentTransactionDetail(PaymentTransaction):
     fee_distribution: Optional[FeeDistributionBase] = None
 
 class PaymentStatusUpdate(BaseModel):
-    """
-    Schema for WebSocket updates regarding payment session status.
-    """
     session_id: uuid.UUID
     status: PaymentSessionStatus
-    payment_transaction: Optional[PaymentTransactionDetail] = None # Sent on completion
-    error_message: Optional[str] = None # Sent on failure
+    error_message: Optional[str] = None
+
+# class PaymentStatusUpdate(BaseModel):
+#     """
+#     Schema for WebSocket updates regarding payment session status.
+#     """
+#     session_id: uuid.UUID
+#     status: PaymentSessionStatus
+#     payment_transaction: Optional[PaymentTransactionDetail] = None # Sent on completion
+#     error_message: Optional[str] = None # Sent on failure
+
+
 # --- Note ---
 # Additional schemas for deposits and withdrawals would typically be in payment.py,
