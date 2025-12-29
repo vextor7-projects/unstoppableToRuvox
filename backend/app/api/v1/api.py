@@ -14,9 +14,9 @@ from app.api.v1.endpoints import (
     market,
     staking,
     nfts,
-    admin
+    admin,
+    websockets
 )
-from app.api.v1 import websockets
 
 api_router = APIRouter()
 

@@ -6,7 +6,7 @@ from sqlalchemy.future import select
 from sqlalchemy.orm import selectinload
 
 from app.crud.base import BaseCRUD
-from app.helpers import generate_unique_id
+from app.utils.helpers import generate_unique_id
 from app.models.invoice import Invoice
 from app.schemas.invoice import InvoiceCreate, InvoiceUpdate
 from app.utils.enums import InvoiceStatus

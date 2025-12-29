@@ -7,6 +7,8 @@ from sqlalchemy.ext.asyncio import create_async_engine
 
 # Import the Base from our app's db module
 from app.db.base_class import Base
+from uuid import uuid4
+import sys
 
 # Import the settings to get the database URL
 from app.core.config import settings
@@ -63,7 +65,10 @@ async def run_migrations_online() -> None:
     connectable = create_async_engine(
         str(settings.DATABASE_URL),
         pool_pre_ping=True,
-        connect_args={"statement_cache_size": 0}
+        connect_args={
+            "statement_cache_size": 0,
+            "prepared_statement_name_func": lambda: f"__asyncpg_{uuid4()}__", # <--- ADD THIS
+        }
     )
 
     async with connectable.connect() as connection:
@@ -75,4 +80,7 @@ async def run_migrations_online() -> None:
 if context.is_offline_mode():
     run_migrations_offline()
 else:
+    if sys.platform == "win32":
+        asyncio.set_event_loop_policy(asyncio.WindowsSelectorEventLoopPolicy())
+        
     asyncio.run(run_migrations_online())

@@ -70,6 +70,35 @@ class WalletBase(BaseModel):
     class Config:
         from_attributes = True
 
+class WalletCreate(WalletBase):
+    """
+    Schema for creating a wallet via CRUD (Internal).
+    Does NOT include portfolio_id as it is passed via parent relationship.
+    """
+    @field_validator("address")
+    @classmethod
+    def validate_address(cls, v: str, info) -> str:
+        """
+        Validate address format based on the selected chain.
+        """
+        values = info.data
+        chain = values.get("chain")
+        
+        if not chain:
+            return v 
+
+        if chain in [Chain.ETHEREUM, Chain.BASE, Chain.POLYGON]:
+            if not EVM_ADDRESS_REGEX.match(v):
+                raise ValueError(f"Invalid {chain} address format.")
+        elif chain == Chain.SOLANA:
+            if not SOLANA_ADDRESS_REGEX.match(v):
+                raise ValueError("Invalid Solana address format.")
+        elif chain == Chain.BITCOIN:
+            if not BTC_ADDRESS_REGEX.match(v):
+                raise ValueError("Invalid Bitcoin address format.")
+                
+        return v
+
 class WalletAddRequest(BaseModel):
     """
     Schema for adding a PUBLIC wallet address generated on the client.

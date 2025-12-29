@@ -1,4 +1,5 @@
 from typing import AsyncGenerator
+from uuid import uuid4
 
 from sqlalchemy.ext.asyncio import (
     AsyncSession,
@@ -13,7 +14,10 @@ async_engine = create_async_engine(
     str(settings.DATABASE_URL),
     pool_pre_ping=True,
     echo=False,
-    connect_args={"statement_cache_size": 0} 
+    connect_args={
+        "statement_cache_size": 0,
+        "prepared_statement_name_func": lambda: f"__asyncpg_{uuid4()}__", # <--- ADD THIS
+    } 
 )
 
 # Create an asynchronous session factory

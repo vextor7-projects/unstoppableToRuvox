@@ -1,8 +1,8 @@
-"""Initial Schema
+"""Initial Schema Fixed
 
-Revision ID: d8ad8d6cf2d1
+Revision ID: 3d543f5938f3
 Revises: 
-Create Date: 2025-12-10 22:50:39.967207
+Create Date: 2025-12-29 11:26:09.669242
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'd8ad8d6cf2d1'
+revision: str = '3d543f5938f3'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -81,9 +81,11 @@ def upgrade() -> None:
     sa.Column('deleted_at', sa.DateTime(timezone=True), nullable=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_user_account_email'), 'user_account', ['email'], unique=True)
+    op.create_index(op.f('ix_user_account_email'), 'user_account', ['email'], unique=False)
     op.create_index(op.f('ix_user_account_is_deleted'), 'user_account', ['is_deleted'], unique=False)
-    op.create_index(op.f('ix_user_account_username'), 'user_account', ['username'], unique=True)
+    op.create_index(op.f('ix_user_account_username'), 'user_account', ['username'], unique=False)
+    op.create_index('ix_user_email_active', 'user_account', ['email'], unique=True, postgresql_where=sa.text('is_deleted = false'))
+    op.create_index('ix_user_username_active', 'user_account', ['username'], unique=True, postgresql_where=sa.text('is_deleted = false'))
     op.create_table('address_whitelist',
     sa.Column('user_id', sa.UUID(), nullable=False),
     sa.Column('chain', sa.Enum('SOLANA', 'BASE', 'POLYGON', 'ETHEREUM', 'BITCOIN', name='chain'), nullable=False),
@@ -172,39 +174,12 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user_account.id'], ),
-    sa.PrimaryKeyConstraint('user_id', 'id')
+    sa.PrimaryKeyConstraint('user_id', 'id'),
+    sa.UniqueConstraint('user_id', name='uq_merchant_user_id')
     )
     op.create_index(op.f('ix_merchant_business_name'), 'merchant', ['business_name'], unique=False)
     op.create_index(op.f('ix_merchant_kyc_status'), 'merchant', ['kyc_status'], unique=False)
     op.create_index(op.f('ix_merchant_registration_number'), 'merchant', ['registration_number'], unique=False)
-    op.create_table('payment_transaction',
-    sa.Column('session_id', sa.UUID(), nullable=False),
-    sa.Column('payer_user_id', sa.UUID(), nullable=True),
-    sa.Column('payer_address', sa.String(length=255), nullable=False),
-    sa.Column('recipient_address', sa.String(length=255), nullable=False),
-    sa.Column('tx_hash', sa.String(length=255), nullable=False),
-    sa.Column('chain', sa.Enum('SOLANA', 'BASE', 'POLYGON', 'ETHEREUM', 'BITCOIN', name='chain'), nullable=False),
-    sa.Column('amount_paid', sa.Numeric(precision=36, scale=18), nullable=False),
-    sa.Column('token_paid_symbol', sa.String(length=20), nullable=False),
-    sa.Column('token_paid_address', sa.String(length=255), nullable=True),
-    sa.Column('amount_received', sa.Numeric(precision=36, scale=18), nullable=False),
-    sa.Column('token_received_symbol', sa.String(length=20), nullable=False),
-    sa.Column('fee_amount_paid', sa.Numeric(precision=36, scale=18), nullable=True),
-    sa.Column('app_fee_amount', sa.Numeric(precision=36, scale=18), nullable=True),
-    sa.Column('timestamp', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['payer_user_id'], ['user_account.id'], ),
-    sa.ForeignKeyConstraint(['session_id'], ['payment_session.id'], name='fk_payment_txn_session', use_alter=True),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_payment_transaction_payer_address'), 'payment_transaction', ['payer_address'], unique=False)
-    op.create_index(op.f('ix_payment_transaction_payer_user_id'), 'payment_transaction', ['payer_user_id'], unique=False)
-    op.create_index(op.f('ix_payment_transaction_recipient_address'), 'payment_transaction', ['recipient_address'], unique=False)
-    op.create_index(op.f('ix_payment_transaction_session_id'), 'payment_transaction', ['session_id'], unique=False)
-    op.create_index(op.f('ix_payment_transaction_timestamp'), 'payment_transaction', ['timestamp'], unique=False)
-    op.create_index(op.f('ix_payment_transaction_tx_hash'), 'payment_transaction', ['tx_hash'], unique=True)
     op.create_table('portfolio',
     sa.Column('name', sa.String(length=100), nullable=False),
     sa.Column('user_id', sa.UUID(), nullable=False),
@@ -329,7 +304,8 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['user_id'], ['user_account.id'], ),
-    sa.PrimaryKeyConstraint('user_id', 'id')
+    sa.PrimaryKeyConstraint('user_id', 'id'),
+    sa.UniqueConstraint('user_id', name='uq_vip_tier_user_id')
     )
     op.create_index(op.f('ix_vip_tier_tier'), 'vip_tier', ['tier'], unique=False)
     op.create_table('compliance_report',
@@ -377,20 +353,6 @@ def upgrade() -> None:
     op.create_index(op.f('ix_deposit_transaction_to_address'), 'deposit_transaction', ['to_address'], unique=False)
     op.create_index(op.f('ix_deposit_transaction_tx_hash'), 'deposit_transaction', ['tx_hash'], unique=True)
     op.create_index(op.f('ix_deposit_transaction_user_id'), 'deposit_transaction', ['user_id'], unique=False)
-    op.create_table('fee_distribution',
-    sa.Column('payment_transaction_id', sa.UUID(), nullable=False),
-    sa.Column('tx_hash', sa.String(length=255), nullable=False),
-    sa.Column('app_fee_amount', sa.Numeric(precision=36, scale=18), nullable=False),
-    sa.Column('app_fee_token_symbol', sa.String(length=20), nullable=False),
-    sa.Column('app_fee_recipient_address', sa.String(length=255), nullable=False),
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['payment_transaction_id'], ['payment_transaction.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_fee_distribution_payment_transaction_id'), 'fee_distribution', ['payment_transaction_id'], unique=False)
-    op.create_index(op.f('ix_fee_distribution_tx_hash'), 'fee_distribution', ['tx_hash'], unique=False)
     op.create_table('interest_accrual',
     sa.Column('staking_position_id', sa.UUID(), nullable=False),
     sa.Column('amount', sa.Numeric(precision=36, scale=18), nullable=False),
@@ -403,30 +365,6 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_interest_accrual_staking_position_id'), 'interest_accrual', ['staking_position_id'], unique=False)
-    op.create_table('invoice',
-    sa.Column('creator_user_id', sa.UUID(), nullable=False),
-    sa.Column('payer_email', sa.String(length=255), nullable=True),
-    sa.Column('amount_fiat', sa.Numeric(precision=20, scale=4), nullable=False),
-    sa.Column('fiat_currency', sa.String(length=10), nullable=False),
-    sa.Column('description', sa.Text(), nullable=True),
-    sa.Column('due_date', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('status', sa.Enum('DRAFT', 'SENT', 'PAID', 'OVERDUE', 'CANCELLED', 'PENDING', name='invoicestatus'), nullable=False),
-    sa.Column('payment_link_id', sa.String(length=50), nullable=False),
-    sa.Column('payment_contract_address', sa.String(length=255), nullable=True),
-    sa.Column('paid_at', sa.DateTime(timezone=True), nullable=True),
-    sa.Column('payment_transaction_id', sa.UUID(), nullable=True),
-    sa.Column('id', sa.UUID(), nullable=False),
-    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['creator_user_id'], ['user_account.id'], ),
-    sa.ForeignKeyConstraint(['payment_transaction_id'], ['payment_transaction.id'], ),
-    sa.PrimaryKeyConstraint('id')
-    )
-    op.create_index(op.f('ix_invoice_creator_user_id'), 'invoice', ['creator_user_id'], unique=False)
-    op.create_index(op.f('ix_invoice_payer_email'), 'invoice', ['payer_email'], unique=False)
-    op.create_index(op.f('ix_invoice_payment_link_id'), 'invoice', ['payment_link_id'], unique=True)
-    op.create_index(op.f('ix_invoice_payment_transaction_id'), 'invoice', ['payment_transaction_id'], unique=False)
-    op.create_index(op.f('ix_invoice_status'), 'invoice', ['status'], unique=False)
     op.create_table('merchant_employee',
     sa.Column('merchant_id', sa.UUID(), nullable=False),
     sa.Column('email', sa.String(length=255), nullable=False),
@@ -456,7 +394,7 @@ def upgrade() -> None:
     sa.ForeignKeyConstraint(['merchant_user_id'], ['merchant.user_id'], ),
     sa.PrimaryKeyConstraint('merchant_user_id', 'id')
     )
-    op.create_index(op.f('ix_merchant_kyc_status'), 'merchant_kyc', ['status'], unique=False)
+    op.create_index(op.f('ix_merchant_kyc_submission_status'), 'merchant_kyc', ['status'], unique=False)
     op.create_table('merchant_settlement',
     sa.Column('merchant_id', sa.UUID(), nullable=False),
     sa.Column('period_start', sa.DateTime(timezone=True), nullable=False),
@@ -509,31 +447,43 @@ def upgrade() -> None:
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.ForeignKeyConstraint(['creator_user_id'], ['user_account.id'], ),
-    sa.ForeignKeyConstraint(['merchant_id'], ['merchant.id'], ),
+    sa.ForeignKeyConstraint(['merchant_id'], ['merchant.user_id'], ),
     sa.ForeignKeyConstraint(['payment_transaction_id'], ['payment_transaction.id'], name='fk_payment_session_txn', use_alter=True),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_payment_session_creator_user_id'), 'payment_session', ['creator_user_id'], unique=False)
     op.create_index(op.f('ix_payment_session_merchant_id'), 'payment_session', ['merchant_id'], unique=False)
     op.create_index(op.f('ix_payment_session_status'), 'payment_session', ['status'], unique=False)
-    op.create_table('swap_transaction',
-    sa.Column('payment_transaction_id', sa.UUID(), nullable=False),
+    op.create_table('payment_transaction',
+    sa.Column('session_id', sa.UUID(), nullable=False),
+    sa.Column('payer_user_id', sa.UUID(), nullable=True),
+    sa.Column('payer_address', sa.String(length=255), nullable=False),
+    sa.Column('recipient_address', sa.String(length=255), nullable=False),
     sa.Column('tx_hash', sa.String(length=255), nullable=False),
-    sa.Column('aggregator', sa.String(length=50), nullable=False),
-    sa.Column('token_in_address', sa.String(length=255), nullable=True),
-    sa.Column('token_in_symbol', sa.String(length=20), nullable=False),
-    sa.Column('amount_in', sa.Numeric(precision=36, scale=18), nullable=False),
-    sa.Column('token_out_address', sa.String(length=255), nullable=True),
-    sa.Column('token_out_symbol', sa.String(length=20), nullable=False),
-    sa.Column('amount_out', sa.Numeric(precision=36, scale=18), nullable=False),
+    sa.Column('chain', sa.Enum('SOLANA', 'BASE', 'POLYGON', 'ETHEREUM', 'BITCOIN', name='chain'), nullable=False),
+    sa.Column('amount_paid', sa.Numeric(precision=36, scale=18), nullable=False),
+    sa.Column('token_paid_symbol', sa.String(length=20), nullable=False),
+    sa.Column('token_paid_address', sa.String(length=255), nullable=True),
+    sa.Column('amount_received', sa.Numeric(precision=36, scale=18), nullable=False),
+    sa.Column('token_received_symbol', sa.String(length=20), nullable=False),
+    sa.Column('fee_amount_paid', sa.Numeric(precision=36, scale=18), nullable=True),
+    sa.Column('app_fee_amount', sa.Numeric(precision=36, scale=18), nullable=True),
+    sa.Column('timestamp', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=True),
+    sa.Column('internal_ledger_entry_id', sa.UUID(), nullable=True),
     sa.Column('id', sa.UUID(), nullable=False),
     sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
     sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
-    sa.ForeignKeyConstraint(['payment_transaction_id'], ['payment_transaction.id'], ),
+    sa.ForeignKeyConstraint(['internal_ledger_entry_id'], ['internal_ledger.id'], ),
+    sa.ForeignKeyConstraint(['payer_user_id'], ['user_account.id'], ),
+    sa.ForeignKeyConstraint(['session_id'], ['payment_session.id'], name='fk_payment_txn_session', use_alter=True),
     sa.PrimaryKeyConstraint('id')
     )
-    op.create_index(op.f('ix_swap_transaction_payment_transaction_id'), 'swap_transaction', ['payment_transaction_id'], unique=False)
-    op.create_index(op.f('ix_swap_transaction_tx_hash'), 'swap_transaction', ['tx_hash'], unique=False)
+    op.create_index(op.f('ix_payment_transaction_payer_address'), 'payment_transaction', ['payer_address'], unique=False)
+    op.create_index(op.f('ix_payment_transaction_payer_user_id'), 'payment_transaction', ['payer_user_id'], unique=False)
+    op.create_index(op.f('ix_payment_transaction_recipient_address'), 'payment_transaction', ['recipient_address'], unique=False)
+    op.create_index(op.f('ix_payment_transaction_session_id'), 'payment_transaction', ['session_id'], unique=False)
+    op.create_index(op.f('ix_payment_transaction_timestamp'), 'payment_transaction', ['timestamp'], unique=False)
+    op.create_index(op.f('ix_payment_transaction_tx_hash'), 'payment_transaction', ['tx_hash'], unique=True)
     op.create_table('tier_history',
     sa.Column('user_id', sa.UUID(), nullable=False),
     sa.Column('old_tier', sa.Enum('BRONZE', 'SILVER', 'GOLD', 'PLATINUM', name='viptierlevel'), nullable=True),
@@ -619,6 +569,44 @@ def upgrade() -> None:
     op.create_index(op.f('ix_bitcoin_utxo_is_spent'), 'bitcoin_utxo', ['is_spent'], unique=False)
     op.create_index(op.f('ix_bitcoin_utxo_tx_hash'), 'bitcoin_utxo', ['tx_hash'], unique=False)
     op.create_index(op.f('ix_bitcoin_utxo_wallet_id'), 'bitcoin_utxo', ['wallet_id'], unique=False)
+    op.create_table('fee_distribution',
+    sa.Column('payment_transaction_id', sa.UUID(), nullable=False),
+    sa.Column('tx_hash', sa.String(length=255), nullable=False),
+    sa.Column('app_fee_amount', sa.Numeric(precision=36, scale=18), nullable=False),
+    sa.Column('app_fee_token_symbol', sa.String(length=20), nullable=False),
+    sa.Column('app_fee_recipient_address', sa.String(length=255), nullable=False),
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.ForeignKeyConstraint(['payment_transaction_id'], ['payment_transaction.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_fee_distribution_payment_transaction_id'), 'fee_distribution', ['payment_transaction_id'], unique=False)
+    op.create_index(op.f('ix_fee_distribution_tx_hash'), 'fee_distribution', ['tx_hash'], unique=False)
+    op.create_table('invoice',
+    sa.Column('creator_user_id', sa.UUID(), nullable=False),
+    sa.Column('payer_email', sa.String(length=255), nullable=True),
+    sa.Column('amount_fiat', sa.Numeric(precision=20, scale=4), nullable=False),
+    sa.Column('fiat_currency', sa.String(length=10), nullable=False),
+    sa.Column('description', sa.Text(), nullable=True),
+    sa.Column('due_date', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('status', sa.Enum('DRAFT', 'SENT', 'PAID', 'OVERDUE', 'CANCELLED', 'PENDING', name='invoicestatus'), nullable=False),
+    sa.Column('payment_link_id', sa.String(length=50), nullable=False),
+    sa.Column('payment_contract_address', sa.String(length=255), nullable=True),
+    sa.Column('paid_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('payment_transaction_id', sa.UUID(), nullable=True),
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.ForeignKeyConstraint(['creator_user_id'], ['user_account.id'], ),
+    sa.ForeignKeyConstraint(['payment_transaction_id'], ['payment_transaction.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_invoice_creator_user_id'), 'invoice', ['creator_user_id'], unique=False)
+    op.create_index(op.f('ix_invoice_payer_email'), 'invoice', ['payer_email'], unique=False)
+    op.create_index(op.f('ix_invoice_payment_link_id'), 'invoice', ['payment_link_id'], unique=True)
+    op.create_index(op.f('ix_invoice_payment_transaction_id'), 'invoice', ['payment_transaction_id'], unique=False)
+    op.create_index(op.f('ix_invoice_status'), 'invoice', ['status'], unique=False)
     op.create_table('onchain_transaction',
     sa.Column('wallet_id', sa.UUID(), nullable=False),
     sa.Column('tx_hash', sa.String(length=255), nullable=False),
@@ -670,6 +658,24 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('settlement_id', 'payment_transaction_id', 'id'),
     sa.UniqueConstraint('payment_transaction_id')
     )
+    op.create_table('swap_transaction',
+    sa.Column('payment_transaction_id', sa.UUID(), nullable=False),
+    sa.Column('tx_hash', sa.String(length=255), nullable=False),
+    sa.Column('aggregator', sa.String(length=50), nullable=False),
+    sa.Column('token_in_address', sa.String(length=255), nullable=True),
+    sa.Column('token_in_symbol', sa.String(length=20), nullable=False),
+    sa.Column('amount_in', sa.Numeric(precision=36, scale=18), nullable=False),
+    sa.Column('token_out_address', sa.String(length=255), nullable=True),
+    sa.Column('token_out_symbol', sa.String(length=20), nullable=False),
+    sa.Column('amount_out', sa.Numeric(precision=36, scale=18), nullable=False),
+    sa.Column('id', sa.UUID(), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), server_default=sa.text('now()'), nullable=False),
+    sa.ForeignKeyConstraint(['payment_transaction_id'], ['payment_transaction.id'], ),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_swap_transaction_payment_transaction_id'), 'swap_transaction', ['payment_transaction_id'], unique=False)
+    op.create_index(op.f('ix_swap_transaction_tx_hash'), 'swap_transaction', ['tx_hash'], unique=False)
     op.create_table('token_balance',
     sa.Column('wallet_id', sa.UUID(), nullable=False),
     sa.Column('token_coingecko_id', sa.String(length=100), nullable=True),
@@ -722,6 +728,9 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_token_balance_token_coingecko_id'), table_name='token_balance')
     op.drop_index(op.f('ix_token_balance_token_address'), table_name='token_balance')
     op.drop_table('token_balance')
+    op.drop_index(op.f('ix_swap_transaction_tx_hash'), table_name='swap_transaction')
+    op.drop_index(op.f('ix_swap_transaction_payment_transaction_id'), table_name='swap_transaction')
+    op.drop_table('swap_transaction')
     op.drop_table('settlement_detail')
     op.drop_index(op.f('ix_regulatory_submission_jurisdiction'), table_name='regulatory_submission')
     op.drop_index(op.f('ix_regulatory_submission_compliance_report_id'), table_name='regulatory_submission')
@@ -730,6 +739,15 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_onchain_transaction_tx_hash'), table_name='onchain_transaction')
     op.drop_index(op.f('ix_onchain_transaction_timestamp'), table_name='onchain_transaction')
     op.drop_table('onchain_transaction')
+    op.drop_index(op.f('ix_invoice_status'), table_name='invoice')
+    op.drop_index(op.f('ix_invoice_payment_transaction_id'), table_name='invoice')
+    op.drop_index(op.f('ix_invoice_payment_link_id'), table_name='invoice')
+    op.drop_index(op.f('ix_invoice_payer_email'), table_name='invoice')
+    op.drop_index(op.f('ix_invoice_creator_user_id'), table_name='invoice')
+    op.drop_table('invoice')
+    op.drop_index(op.f('ix_fee_distribution_tx_hash'), table_name='fee_distribution')
+    op.drop_index(op.f('ix_fee_distribution_payment_transaction_id'), table_name='fee_distribution')
+    op.drop_table('fee_distribution')
     op.drop_index(op.f('ix_bitcoin_utxo_wallet_id'), table_name='bitcoin_utxo')
     op.drop_index(op.f('ix_bitcoin_utxo_tx_hash'), table_name='bitcoin_utxo')
     op.drop_index(op.f('ix_bitcoin_utxo_is_spent'), table_name='bitcoin_utxo')
@@ -747,9 +765,13 @@ def downgrade() -> None:
     op.drop_table('vip_benefits_log')
     op.drop_index(op.f('ix_tier_history_user_id'), table_name='tier_history')
     op.drop_table('tier_history')
-    op.drop_index(op.f('ix_swap_transaction_tx_hash'), table_name='swap_transaction')
-    op.drop_index(op.f('ix_swap_transaction_payment_transaction_id'), table_name='swap_transaction')
-    op.drop_table('swap_transaction')
+    op.drop_index(op.f('ix_payment_transaction_tx_hash'), table_name='payment_transaction')
+    op.drop_index(op.f('ix_payment_transaction_timestamp'), table_name='payment_transaction')
+    op.drop_index(op.f('ix_payment_transaction_session_id'), table_name='payment_transaction')
+    op.drop_index(op.f('ix_payment_transaction_recipient_address'), table_name='payment_transaction')
+    op.drop_index(op.f('ix_payment_transaction_payer_user_id'), table_name='payment_transaction')
+    op.drop_index(op.f('ix_payment_transaction_payer_address'), table_name='payment_transaction')
+    op.drop_table('payment_transaction')
     op.drop_index(op.f('ix_payment_session_status'), table_name='payment_session')
     op.drop_index(op.f('ix_payment_session_merchant_id'), table_name='payment_session')
     op.drop_index(op.f('ix_payment_session_creator_user_id'), table_name='payment_session')
@@ -766,17 +788,8 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_merchant_employee_merchant_id'), table_name='merchant_employee')
     op.drop_index(op.f('ix_merchant_employee_email'), table_name='merchant_employee')
     op.drop_table('merchant_employee')
-    op.drop_index(op.f('ix_invoice_status'), table_name='invoice')
-    op.drop_index(op.f('ix_invoice_payment_transaction_id'), table_name='invoice')
-    op.drop_index(op.f('ix_invoice_payment_link_id'), table_name='invoice')
-    op.drop_index(op.f('ix_invoice_payer_email'), table_name='invoice')
-    op.drop_index(op.f('ix_invoice_creator_user_id'), table_name='invoice')
-    op.drop_table('invoice')
     op.drop_index(op.f('ix_interest_accrual_staking_position_id'), table_name='interest_accrual')
     op.drop_table('interest_accrual')
-    op.drop_index(op.f('ix_fee_distribution_tx_hash'), table_name='fee_distribution')
-    op.drop_index(op.f('ix_fee_distribution_payment_transaction_id'), table_name='fee_distribution')
-    op.drop_table('fee_distribution')
     op.drop_index(op.f('ix_deposit_transaction_user_id'), table_name='deposit_transaction')
     op.drop_index(op.f('ix_deposit_transaction_tx_hash'), table_name='deposit_transaction')
     op.drop_index(op.f('ix_deposit_transaction_to_address'), table_name='deposit_transaction')
@@ -813,13 +826,6 @@ def downgrade() -> None:
     op.drop_table('price_alert')
     op.drop_index(op.f('ix_portfolio_user_id'), table_name='portfolio')
     op.drop_table('portfolio')
-    op.drop_index(op.f('ix_payment_transaction_tx_hash'), table_name='payment_transaction')
-    op.drop_index(op.f('ix_payment_transaction_timestamp'), table_name='payment_transaction')
-    op.drop_index(op.f('ix_payment_transaction_session_id'), table_name='payment_transaction')
-    op.drop_index(op.f('ix_payment_transaction_recipient_address'), table_name='payment_transaction')
-    op.drop_index(op.f('ix_payment_transaction_payer_user_id'), table_name='payment_transaction')
-    op.drop_index(op.f('ix_payment_transaction_payer_address'), table_name='payment_transaction')
-    op.drop_table('payment_transaction')
     op.drop_index(op.f('ix_merchant_registration_number'), table_name='merchant')
     op.drop_index(op.f('ix_merchant_kyc_status'), table_name='merchant')
     op.drop_index(op.f('ix_merchant_business_name'), table_name='merchant')
@@ -843,6 +849,8 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_address_whitelist_user_id'), table_name='address_whitelist')
     op.drop_index(op.f('ix_address_whitelist_address'), table_name='address_whitelist')
     op.drop_table('address_whitelist')
+    op.drop_index('ix_user_username_active', table_name='user_account', postgresql_where=sa.text('is_deleted = false'))
+    op.drop_index('ix_user_email_active', table_name='user_account', postgresql_where=sa.text('is_deleted = false'))
     op.drop_index(op.f('ix_user_account_username'), table_name='user_account')
     op.drop_index(op.f('ix_user_account_is_deleted'), table_name='user_account')
     op.drop_index(op.f('ix_user_account_email'), table_name='user_account')

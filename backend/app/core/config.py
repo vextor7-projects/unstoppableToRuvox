@@ -17,9 +17,7 @@ class Settings(BaseSettings):
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 30
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
-    # CRITICAL: Dedicated key for encrypting PII/Private Keys. 
-    # Must be 32 url-safe base64-encoded bytes.
-    ENCRYPTION_KEY: Optional[str] = None
+    ENCRYPTION_KEY: str
     
     # --- Database (PostgreSQL) ---
     DATABASE_URL: PostgresDsn
@@ -71,6 +69,7 @@ class Settings(BaseSettings):
     
     # --- Market Data (Stage 14) ---
     COINGECKO_API_KEY: Optional[str] = None
+    ONEINCH_API_KEY: Optional[str] = None
     
     # --- Notifications (Stage 15) ---
     # Option 1: AWS SES

@@ -109,7 +109,7 @@ async def update_employee(
     except NotFoundException:
         raise HTTPException(status_code=404, detail="Employee not found.")
 
-@router.delete("/employees/{employee_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/employees/{employee_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
 async def delete_employee(
     employee_id: uuid.UUID,
     current_user: User = Depends(get_current_merchant_user),

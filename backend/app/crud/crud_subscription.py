@@ -8,7 +8,7 @@ from sqlalchemy.future import select
 from sqlalchemy import update, and_, desc
 
 from app.crud.base import BaseCRUD
-from app.helpers import get_utc_now
+from app.utils.helpers import get_utc_now
 from app.models.subscription import Subscription, PullPaymentApproval
 from app.schemas.subscription import (
     SubscriptionCreate,

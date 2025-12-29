@@ -109,6 +109,16 @@ class WithdrawalRequestCreate(BaseModel):
     # Optional: 2FA code if required
     totp_code: Optional[str] = Field(None, pattern=r"^\d{6}$")
 
+class WithdrawalRequestUpdate(BaseModel):
+    """
+    Schema for updating a withdrawal request.
+    Used by background workers to update status and tx details after processing.
+    """
+    status: Optional[WithdrawalStatus] = None
+    tx_hash: Optional[str] = None
+    fee_amount: Optional[Decimal] = None
+    processed_at: Optional[datetime] = None
+
 class WithdrawalRequestBase(BaseModel):
     """
     Base schema for withdrawal request details.
@@ -134,7 +144,6 @@ class WithdrawalRequest(WithdrawalRequestBase):
     id: uuid.UUID
     user_id: uuid.UUID
     internal_ledger_entry_id: Optional[uuid.UUID] = None
-
 
 # --- Internal Balance/History Schemas ---
 

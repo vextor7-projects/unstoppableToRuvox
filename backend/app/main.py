@@ -37,17 +37,17 @@ async def lifespan(app: FastAPI):
     """
     logger.info("Application starting up...")
     
-    # 1. Start WebSocket Redis Listener
+    # Start WebSocket Redis Listener
     await websocket_manager.start()
     
     yield
     
     logger.info("Application shutting down...")
     
-    # 2. Stop WebSocket Redis Listener
+    # Stop WebSocket Redis Listener
     await websocket_manager.stop()
     
-    # 3. Close DB Connections (Handled by Engine disposal usually, but good practice if manual)
+    # Close DB Connections (Handled by Engine disposal usually, but good practice if manual)
     from app.db.session import async_engine
     await async_engine.dispose()
 
@@ -62,13 +62,13 @@ app = FastAPI(
 
 # --- Middleware ---
 
-# 1. Trusted Host (Prevent Host Header Injection)
+# Trusted Host (Prevent Host Header Injection)
 app.add_middleware(
     TrustedHostMiddleware, 
     allowed_hosts=["*"] # Restrict this in production to your domain (e.g. ["api.ruvox.com"])
 )
 
-# 2. CORS (Cross-Origin Resource Sharing)
+# CORS Middleware
 if settings.BACKEND_CORS_ORIGINS:
     app.add_middleware(
         CORSMiddleware,

@@ -11,7 +11,7 @@ from sqlalchemy import update, and_, desc
 
 from app.crud.base import BaseCRUD
 from app.core.security import get_password_hash
-from app.helpers import generate_secure_random_string
+from app.utils.helpers import generate_secure_random_string
 from app.models.merchant import (
     Merchant,
     MerchantKyc,

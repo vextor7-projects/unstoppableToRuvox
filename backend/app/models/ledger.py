@@ -72,6 +72,8 @@ class InternalLedger(Base):
     
     user = relationship("User", back_populates="internal_ledger_entries", foreign_keys=[user_id])
     related_user = relationship("User", foreign_keys=[related_user_id])
+    
+    travel_rule_record = relationship("TravelRuleRecord", back_populates="internal_ledger_entry", uselist=False)
 
 
 class DepositTransaction(Base):

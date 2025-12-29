@@ -64,7 +64,9 @@ class TravelRuleRecord(Base):
     # --- Relationships ---
     
     sender_user = relationship("User", back_populates="travel_rule_records")
-    onchain_transaction = relationship("OnChainTransaction", back_populates="travel_rule_record")
+    
+    onchain_transaction = relationship("Transaction", back_populates="travel_rule_record")
+    
     internal_ledger_entry = relationship("InternalLedger", back_populates="travel_rule_record")
 
 

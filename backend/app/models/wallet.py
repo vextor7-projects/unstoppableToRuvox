@@ -167,6 +167,8 @@ class Transaction(Base):
     
     wallet = relationship("Wallet", back_populates="transactions")
     
+    travel_rule_record = relationship("TravelRuleRecord", back_populates="onchain_transaction", uselist=False)
+    
     __table_args__ = (
         UniqueConstraint('wallet_id', 'tx_hash', name='_wallet_tx_hash_uc'),
     )

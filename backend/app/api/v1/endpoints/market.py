@@ -94,7 +94,7 @@ async def get_my_alerts(
     """
     return await crud_price_alert.get_by_user(db, user_id=current_user.id)
 
-@router.delete("/alerts/{alert_id}", status_code=status.HTTP_204_NO_CONTENT)
+@router.delete("/alerts/{alert_id}", status_code=status.HTTP_204_NO_CONTENT, response_model=None)
 async def delete_price_alert(
     alert_id: str, # UUID string
     current_user: User = Depends(get_current_active_user),

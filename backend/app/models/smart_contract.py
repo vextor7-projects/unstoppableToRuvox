@@ -7,7 +7,8 @@ from sqlalchemy import (
     DateTime,
     Text,
     Integer,
-    Boolean
+    Boolean,
+    UniqueConstraint
 )
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -24,18 +25,20 @@ class SmartContract(Base):
     """
     __tablename__ = "smart_contract"
 
-    chain = Column(Enum(Chain), nullable=False, index=True, primary_key=True)
+    id = Column(UUID(as_uuid=True), primary_key=True, default=uuid.uuid4)
+
+    chain = Column(Enum(Chain), nullable=False, index=True)
     
     contract_type = Column(
         Enum(SmartContractType), 
         nullable=False, 
-        index=True, 
-        primary_key=True
+        index=True
     )
     
     address = Column(String(255), nullable=False, index=True)
     
-    version = Column(Integer, default=1, nullable=False, primary_key=True)
+    
+    version = Column(Integer, default=1, nullable=False)
     
     # The ABI (Application Binary Interface) of the contract,
     # encrypted for security and to save space if large.
@@ -51,4 +54,8 @@ class SmartContract(Base):
     payment_transactions = relationship(
         "PaymentTransaction", 
         back_populates="smart_contract"
+    )
+
+    __table_args__ = (
+        UniqueConstraint('chain', 'contract_type', 'version', name='_chain_type_version_uc'),
     )

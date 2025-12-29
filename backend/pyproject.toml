@@ -50,6 +50,8 @@ sendgrid = "^6.11.1"                         # Alternative for email (Stage 15)
 python-dotenv = "^1.0.1"      # Loads .env file
 phonenumbers = "^8.13.43"   # Phone number validation
 # py-solana-account-program = "^0.1.2" # Helper for Solana account interactions <-- REMOVE THIS LINE
+argon2-cffi = "^25.1.0"
+sentry-sdk = "^2.48.0"
 
 [tool.poetry.group.dev.dependencies]
 # --- Testing ---
