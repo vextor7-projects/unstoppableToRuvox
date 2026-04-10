@@ -1,0 +1,41 @@
+{
+  "expo": {
+    "name": "vextor7-mobile",
+    "slug": "vextor7-mobile",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "splash": {
+      "image": "./assets/splash-icon.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#ffffff"
+      },
+      "edgeToEdgeEnabled": true,
+      "predictiveBackGestureEnabled": false,
+      "package": "com.vovwero.vextor7mobile"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store",
+      "sentry-expo",
+      "expo-localization"
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "fb94d10d-c945-478f-b9ee-1477b3c216d6"
+      }
+    }
+  }
+}
