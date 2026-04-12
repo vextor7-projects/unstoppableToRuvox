@@ -29,7 +29,7 @@
     },
     "plugins": [
       "expo-secure-store",
-      "sentry-expo",
+      "@sentry/react-native",
       "expo-localization"
     ],
     "extra": {
